@@ -1,75 +1,106 @@
-# redisearch-newswire-demo
-A news search demo powered by Azure Managed Redis (RediSearch) with full-text search, filtering, and autocomplete
+## 📋 Prerequisites
 
-Setup Instructions
+### 1. Azure Managed Redis Instance
 
-1. Create virtual environment and activate
+You need to create an Azure Managed Redis instance with the following specifications:
 
-Mac/Linux:
+- **SKU:** Basic B1 (1 GB) or higher
+- **Features Required:** RediSearch module enabled
+- **Region:** Any (recommend same region as your location for better latency)
 
-bash
+> 💡 **Tip:** For testing with 10,000 documents, B1 (1 GB) provides comfortable headroom and good performance.
 
+### 2. Python Environment
+
+- Python 3.8 or higher
+- pip package manager
+
+### 3. Sample Data
+
+- The repository includes a small sample parquet file (`sample.parquet`) with 100 documents
+- For testing with 10,000+ documents, you can provide your own parquet file
+
+## 🚀 Quick Start
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/yourusername/redisearch-newswire-demo.git
+cd redisearch-newswire-demo
+```
+
+### 2. Set up virtual environment
+
+**Mac/Linux:**
+```bash
 python3 -m venv venv
 source venv/bin/activate
+```
 
-Windows:
-
-bash
-
+**Windows:**
+```bash
 python -m venv venv
 venv\Scripts\activate
+```
 
-2. Update .env file in backend folder
+### 3. Create environment file
 
-Navigate to the backend folder and create/update the .env file with your Azure Managed Redis credentials:
-
-bash
-
+Navigate to the backend folder:
+```bash
 cd backend
+```
 
-Create a .env file with the following content:
+Copy the template and add your credentials:
+```bash
+cp .env.template .env
+```
 
-env
-
+Edit `.env` with your actual Azure Managed Redis credentials:
+```env
 AMR_HOST=your-redis-instance.redis.cache.windows.net
 AMR_PORT=10000
 AMR_PASSWORD=your-redis-password-here
+```
 
-Replace the values with your actual Azure Managed Redis instance details.
+> 🔑 **Where to find credentials:**
+> 1. Go to Azure Portal
+> 2. Navigate to your Redis Cache instance
+> 3. Go to "Access keys" section
+> 4. Copy the hostname, port, and primary access key
 
-3. Install dependencies
+### 4. Install dependencies
 
-bash
-
+```bash
 pip install -r requirements.txt
+```
 
-4. Create the RediSearch index
+### 5. Create the RediSearch index
 
-bash
-
+```bash
 python create_index.py
+```
 
-This will create the newswire_idx index with the proper schema for searching news articles.
+This creates the `newswire_idx` index with the proper schema for searching news articles.
 
-5. Load sample data
+### 6. Load sample data
 
-bash
-
+```bash
 python load_sample_data.py
+```
 
-This will load 10,000 documents from your parquet file into Redis. The process takes approximately 2-3 minutes.
+This loads documents from your parquet file into Redis. The small sample takes ~30 seconds.
 
-6. Run the demo
+### 7. Start the server
 
-bash
-
+```bash
 python main.py
+```
 
-The API server will start on http://localhost:8000
+The API server will start on `http://localhost:8000`
 
-7. Open your browser
+### 8. Open in browser
 
 Navigate to:
-
+```
 http://localhost:8000
-
+```
