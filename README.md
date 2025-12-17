@@ -72,6 +72,7 @@ pip install -r requirements.txt
 ### 5. Create the RediSearch index
 
 ```bash
+cd backend
 python create_index.py
 ```
 
