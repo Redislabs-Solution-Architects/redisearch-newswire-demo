@@ -45,11 +45,6 @@ venv\Scripts\activate
 
 ### 3. Create environment file
 
-Navigate to the backend folder:
-```bash
-cd backend
-```
-
 Copy the template and add your credentials:
 ```bash
 cp .env.template .env
