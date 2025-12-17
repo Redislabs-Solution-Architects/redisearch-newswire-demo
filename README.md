@@ -1,4 +1,8 @@
-## 📋 Prerequisites
+# RediSearch NewsWire Demo
+<img width="1506" height="780" alt="Screenshot 2025-12-17 at 10 24 27 AM" src="https://github.com/user-attachments/assets/ae94d840-ac4c-4677-babb-e3021bf53efd" />
+
+
+## Prerequisites
 
 ### 1. Azure Managed Redis Instance
 
