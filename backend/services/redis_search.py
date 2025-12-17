@@ -159,13 +159,68 @@ class RedisSearchService:
             print(f"Error fetching document: {e}")
             return None
     
+    def _escape_tag_value(self, value):
+        """Escape special characters in TAG field values."""
+        if not value:
+            return value
+        return value.replace("-", "\\-").replace(" ", "\\ ")
+    
+    def _build_tag_filter(self, field_name, values):
+        """
+        Build a TAG filter for single value or list of values.
+        
+        Args:
+            field_name: The field name (e.g., "category", "source")
+            values: Single string or list of strings
+            
+        Returns:
+            Query string like "@category:{value}" or "(@source:{a} | @source:{b})"
+        """
+        if not values:
+            return None
+        
+        # Handle single value (string)
+        if isinstance(values, str):
+            if values == "All":
+                return None
+            escaped = self._escape_tag_value(values)
+            return f"@{field_name}:{{{escaped}}}"
+        
+        # Handle list of values
+        if isinstance(values, list):
+            if len(values) == 0:
+                return None
+            if len(values) == 1:
+                escaped = self._escape_tag_value(values[0])
+                return f"@{field_name}:{{{escaped}}}"
+            
+            # Multiple values - use OR with pipe inside the tag braces
+            escaped_values = [self._escape_tag_value(v) for v in values]
+            return f"@{field_name}:{{{' | '.join(escaped_values)}}}"
+        
+        return None
+    
     def search(self, query="", category=None, source=None, author=None, 
                use_fuzzy=False, sort_by="relevance", offset=0, limit=10, highlight=True):
-        """Execute search and return results with timing."""
+        """
+        Execute search and return results with timing.
+        
+        Args:
+            query: Search query text
+            category: Single category string or list of categories
+            source: Single source string or list of sources
+            author: Single author string or list of authors
+            use_fuzzy: Enable fuzzy matching
+            sort_by: "relevance", "date_desc", or "date_asc"
+            offset: Pagination offset
+            limit: Number of results
+            highlight: Enable result highlighting
+        """
         start = time.perf_counter()
         
         query_parts = []
         
+        # Handle text query
         if query and query.strip():
             if use_fuzzy:
                 words = query.strip().split()
@@ -174,17 +229,20 @@ class RedisSearchService:
             else:
                 query_parts.append(query.strip())
         
-        if category and category != "All":
-            escaped = category.replace("-", "\\-").replace(" ", "\\ ")
-            query_parts.append(f"@category:{{{escaped}}}")
+        # Handle category filter (string or list)
+        category_filter = self._build_tag_filter("category", category)
+        if category_filter:
+            query_parts.append(category_filter)
         
-        if source and source != "All":
-            escaped = source.replace("-", "\\-").replace(" ", "\\ ")
-            query_parts.append(f"@source:{{{escaped}}}")
+        # Handle source filter (string or list)
+        source_filter = self._build_tag_filter("source", source)
+        if source_filter:
+            query_parts.append(source_filter)
         
-        if author and author != "All":
-            escaped = author.replace("-", "\\-").replace(" ", "\\ ")
-            query_parts.append(f"@author:{{{escaped}}}")
+        # Handle author filter (string or list)
+        author_filter = self._build_tag_filter("author", author)
+        if author_filter:
+            query_parts.append(author_filter)
         
         search_query = " ".join(query_parts) if query_parts else "*"
         
@@ -202,9 +260,9 @@ class RedisSearchService:
             ])
         
         if sort_by == "date_desc":
-            cmd_args.extend(["SORTBY", "published_at", "DESC"])
+            cmd_args.extend(["SORTBY", "published_ts", "DESC"])
         elif sort_by == "date_asc":
-            cmd_args.extend(["SORTBY", "published_at", "ASC"])
+            cmd_args.extend(["SORTBY", "published_ts", "ASC"])
         
         cmd_args.extend(["LIMIT", offset, limit])
         
@@ -217,8 +275,8 @@ class RedisSearchService:
             command = f'FT.SEARCH {self.index_name} "{search_query}"'
             if sort_by != "relevance":
                 sort_field = {
-                    "date_desc": "published_at DESC",
-                    "date_asc": "published_at ASC"
+                    "date_desc": "published_ts DESC",
+                    "date_asc": "published_ts ASC"
                 }.get(sort_by, "")
                 command += f" SORTBY {sort_field}"
             command += f" LIMIT {offset} {limit}"
@@ -233,6 +291,7 @@ class RedisSearchService:
             }
         
         except Exception as e:
+            print(f"Search error: {e}")
             return {
                 "results": [],
                 "latency_ms": 0,
