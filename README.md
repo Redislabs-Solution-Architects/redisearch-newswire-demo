@@ -5,7 +5,7 @@
 You need to create an Azure Managed Redis instance with the following specifications:
 
 - **SKU:** Basic B1 (1 GB) or higher
-- **Features Required:** RediSearch module enabled
+- **Features Required:** RediSearch, RedisJson module enabled
 - **Region:** Any (recommend same region as your location for better latency)
 
 > 💡 **Tip:** For testing with 10,000 documents, B1 (1 GB) provides comfortable headroom and good performance.
