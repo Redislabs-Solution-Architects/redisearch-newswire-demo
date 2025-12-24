@@ -12,7 +12,7 @@ You need to create an Azure Managed Redis instance with the following specificat
 - **Features Required:** RediSearch, RedisJson module enabled
 - **Region:** Any (recommend same region as your location for better latency)
 
-> 💡 **Tip:** For testing with 10,000 documents, B1 (1 GB) provides comfortable headroom and good performance.
+> 💡 **Tip:** For testing with 100 documents, B1 (1 GB) provides comfortable headroom and good performance.
 
 ### 2. Python Environment
 
