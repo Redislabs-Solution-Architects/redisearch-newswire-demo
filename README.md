@@ -1,6 +1,28 @@
 # RediSearch NewsWire Demo
 <img width="1502" height="742" alt="image" src="https://github.com/user-attachments/assets/58567b35-f134-427c-bba6-a28c9f0da774" />
 
+**⚠️ Important:**
+This demo uses relative API paths (/api) in the frontend so the UI and backend can be deployed together on the same host (VM, container, etc.).
+
+**Latency Expectations (Important)**
+| Deployment                                     | Typical Latency |
+| ---------------------------------------------- | --------------- |
+| **Backend on Azure VM (same region as Redis)** | **~1.5–2 ms**   |
+| **Backend on local laptop → Azure Redis**      | **~35–70 ms**   |
+
+**Why this happens**
+
+When running on an Azure VM in the same region as Redis:
+
+- Traffic stays inside Azure’s backbone network
+- Very low RTT and consistent performance
+
+When running from a local machine:
+- Requests traverse the public internet
+- TLS + WAN latency dominates total response time
+
+✅ Best practice:
+For realistic performance testing and demos, run the backend in the same region as your Redis instance.
 
 ## Prerequisites
 
@@ -8,11 +30,11 @@
 
 You need to create an Azure Managed Redis instance with the following specifications:
 
-- **SKU:** Basic B1 (1 GB) or higher
+- **SKU:** Balanced B0/B1 
 - **Features Required:** RediSearch, RedisJson module enabled
 - **Region:** Any (recommend same region as your location for better latency)
 
-> 💡 **Tip:** For testing with 100 documents, B1 (1 GB) provides comfortable headroom and good performance.
+> 💡 **Tip:** For testing with 100 documents, B0/B1 provides comfortable headroom and good performance.
 
 ### 2. Python Environment
 
@@ -22,7 +44,7 @@ You need to create an Azure Managed Redis instance with the following specificat
 ### 3. Sample Data
 
 - The repository includes a small sample parquet file (`sample.parquet`) with 100 documents
-- For testing with 10,000+ documents, you can provide your own parquet file
+- You may substitute your own parquet file for larger datasets (10k+)
 
 ## 🚀 Quick Start
 
@@ -90,17 +112,29 @@ python load_sample_data.py
 
 This loads documents from your parquet file into Redis. The small sample takes ~30 seconds.
 
-### 7. Start the server
-
+### 7. Start API server
 ```bash
-python main.py
+python -m uvicorn main:app --host 0.0.0.0 --port 8000
 ```
-
-The API server will start on `http://localhost:8000`
 
 ### 8. Open in browser
 
-Navigate to:
+On the VM:
+```bash
+http://127.0.0.1:8000
 ```
-http://localhost:8000
+
+From your laptop:
+```bash
+http://<VM_PUBLIC_IP>:8000
+```
+
+Make sure port 8000 is allowed in your Azure VM network rules.
+
+
+### 🧹 Cleanup
+
+To delete all indexed data:
+```bash
+redis-cli FT.DROPINDEX newswire_idx DD
 ```
