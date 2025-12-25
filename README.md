@@ -1,6 +1,5 @@
 # RediSearch NewsWire Demo
-<img width="1501" height="745" alt="image" src="https://github.com/user-attachments/assets/04fbc35d-de27-40a6-8124-346f63c66ed6" />
-
+<img width="1502" height="742" alt="image" src="https://github.com/user-attachments/assets/58567b35-f134-427c-bba6-a28c9f0da774" />
 
 
 ## Prerequisites
