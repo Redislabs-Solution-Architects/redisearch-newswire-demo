@@ -28,7 +28,7 @@ from embedder import NewsEmbedder
 # ============================================
 
 INDEX_NAME = "newswire_idx"
-SCHEMA_PATH = "redisvl_schema.yaml"
+SCHEMA_PATH = "backend/redisvl_schema.yaml"
 DATA_FILE = "data/sample.parquet"
 BATCH_SIZE = 50  # Documents per batch
 EMBEDDING_BATCH_SIZE = 10  # Embeddings per API call
