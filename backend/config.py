@@ -1,17 +1,24 @@
 import os
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
 
-# Azure Managed Redis
-AMR_HOST = os.getenv("AMR_HOST", "your-redis.redis.cache.windows.net")
-AMR_PORT = int(os.getenv("AMR_PORT", 6380))
-AMR_PASSWORD = os.getenv("AMR_PASSWORD", "")
+# Existing Redis config
+AMR_HOST = os.getenv("AMR_HOST")
+AMR_PORT = int(os.getenv("AMR_PORT", "10000"))
+AMR_PASSWORD = os.getenv("AMR_PASSWORD")
 
-# Azure AI Search
-AZURE_SEARCH_ENDPOINT = os.getenv("AZURE_SEARCH_ENDPOINT", "https://your-search.search.windows.net")
-AZURE_SEARCH_KEY = os.getenv("AZURE_SEARCH_KEY", "")
-AZURE_SEARCH_INDEX = os.getenv("AZURE_SEARCH_INDEX", "newswire")
+# NEW - Azure OpenAI config
+AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
+AZURE_OPENAI_KEY = os.getenv("AZURE_OPENAI_KEY")
+AZURE_OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "text-embedding-3-small")
+AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-02-01")
+EMBEDDING_DIMENSIONS = int(os.getenv("EMBEDDING_DIMENSIONS", "1536"))
 
-# Data path
-DATA_PATH = os.path.expanduser("~/Documents/redis/comparison/rediSearch/newswire_100k.jsonl")
+# Validate critical config
+if not all([AMR_HOST, AMR_PORT, AMR_PASSWORD]):
+    raise ValueError("Redis configuration incomplete. Check .env file")
+
+if not all([AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_KEY]):
+    raise ValueError("Azure OpenAI configuration incomplete. Check .env file")
