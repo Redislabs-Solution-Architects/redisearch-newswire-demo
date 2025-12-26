@@ -5,12 +5,17 @@ uvicorn[standard]==0.24.0
 # Redis & RediSearch
 redis==5.0.1
 
+# Azure OpenAI for Embeddings
+openai==1.3.0
+
 # Data Processing
 pandas==2.1.3
 pyarrow==14.0.1
+numpy==1.24.3
 
 # Environment Variables
 python-dotenv==1.0.0
 
-# Additional dependencies (if needed by your main.py)
+# Additional dependencies
 pydantic==2.5.0
+httpx==0.24.1
