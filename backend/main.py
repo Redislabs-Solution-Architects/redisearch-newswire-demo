@@ -8,6 +8,7 @@ from pathlib import Path
 
 # Import your existing redis service
 from services.redis_search import RedisSearchService
+from embedder import NewsEmbedder
 
 # Initialize
 app = FastAPI(title="NewsWire Search API")
@@ -23,6 +24,16 @@ app.add_middleware(
 
 # Initialize Redis service
 redis_service = RedisSearchService()
+
+# Initialize embedder for vector search
+try:
+    embedder = NewsEmbedder()
+    vector_search_enabled = True
+    print("✅ Vector search enabled")
+except Exception as e:
+    embedder = None
+    vector_search_enabled = False
+    print(f"⚠️  Vector search disabled: {e}")
 
 # ============================================
 # API Endpoints
@@ -42,10 +53,10 @@ def search(
     """Search articles with support for multiple categories and sources."""
     has_query = q and len(q.strip()) >= 2
 
-    # Handle multiple categories (comma-separated)
+    # Handle multiple categories (comma-separated) - use lowercase for Redis
     categories = None
     if category and category != "All":
-        cat_list = [c.strip() for c in category.split(",") if c.strip()]
+        cat_list = [c.strip() for c in category.split(",") if c.strip()]  # Remove .lower()
         if len(cat_list) == 1:
             categories = cat_list[0]
         elif len(cat_list) > 1:
@@ -72,6 +83,23 @@ def search(
         highlight=has_query,
     )
 
+    # Strip "article:" prefix from result IDs for frontend
+    if "results" in response:
+        for result in response["results"]:
+            if "id" in result and result["id"].startswith("article:"):
+                result["id"] = result["id"].replace("article:", "")
+            
+            # Fetch content for preview if not present (text search doesn't return it)
+            if "content" not in result or not result.get("content"):
+                try:
+                    doc_id = f"article:{result['id']}"
+                    doc = redis_service.get_document(doc_id)
+                    if doc and "content" in doc:
+                        result["content"] = doc["content"][:300]  # First 300 chars for preview
+                except Exception as e:
+                    print(f"Warning: Could not fetch content for {result['id']}: {e}")
+                    result["content"] = ""
+
     return response
 
 
@@ -79,7 +107,7 @@ def search(
 def get_categories():
     """Get all categories with counts."""
     try:
-        # Get unique category values using FT.TAGVALS
+        # Get unique category values
         tag_values = redis_service.client.execute_command(
             "FT.TAGVALS", redis_service.index_name, "category"
         )
@@ -89,17 +117,25 @@ def get_categories():
             if isinstance(cat, bytes):
                 cat = cat.decode()
 
-            # Get count for this category
-            count_result = redis_service.client.execute_command(
-                "FT.SEARCH",
-                redis_service.index_name,
-                f"@category:{{{cat}}}",
-                "LIMIT",
-                "0",
-                "0",
-            )
-            count = count_result[0] if count_result else 0
-            categories.append({"name": cat.title(), "count": count})
+            # Skip "Other" category
+            if cat.lower() == "other":
+                continue
+
+            try:
+                count_result = redis_service.client.execute_command(
+                    "FT.SEARCH",
+                    redis_service.index_name,
+                    f"@category:{{{cat}}}",
+                    "LIMIT",
+                    "0",
+                    "0",
+                )
+                count = count_result[0] if count_result else 0
+            except:
+                count = 0
+
+            if count > 0:
+                categories.append({"name": cat.title(), "count": count})
 
         # Sort by count descending
         categories.sort(key=lambda x: x["count"], reverse=True)
@@ -199,6 +235,9 @@ def get_category_counts(q: str = "", source: str = "All"):
 @app.get("/api/article/{doc_id:path}")
 def get_article(doc_id: str):
     """Get full article by ID."""
+    # Add article: prefix if not present
+    if not doc_id.startswith("article:"):
+        doc_id = f"article:{doc_id}"
     doc = redis_service.get_document(doc_id)
 
     if not doc:
@@ -331,47 +370,370 @@ def get_trending():
 
 
 @app.get("/api/autocomplete")
-def autocomplete(q: str, limit: int = 5):
-    """Get autocomplete suggestions: matching titles + spell suggestions."""
+def autocomplete(q: str, limit: int = 7):
+    """
+    Unified autocomplete for all search modes.
+    Returns curated suggestions from dictionary + spell check.
+    """
     try:
-        # Get matching article titles
-        results = redis_service.search(
-            query=q,
-            category=None,
-            source=None,
-            author=None,
-            use_fuzzy=False,
-            sort_by="relevance",
-            offset=0,
-            limit=limit,
-            highlight=False,
+        if not q or len(q) < 2:
+            return {"suggestions": [], "spell_suggestion": None}
+        
+        # Get suggestions from curated dictionary
+        suggestions_raw = redis_service.autocomplete(q, limit=limit * 2, fuzzy=False)
+        
+        # Parse and format suggestions
+        suggestions = []
+        seen = set()
+        
+        for sugg in suggestions_raw[:limit]:
+            if isinstance(sugg, bytes):
+                sugg = sugg.decode('utf-8')
+            
+            if sugg and sugg.lower() not in seen:
+                # Determine suggestion type
+                sugg_type = "article" if len(sugg) > 40 else "topic"
+                
+                suggestions.append({
+                    "title": sugg,
+                    "type": sugg_type
+                })
+                seen.add(sugg.lower())
+        
+        # Add spell correction if needed
+        spell_suggestion_text = None
+        if len(suggestions) < 3:  # If few results, try spell check
+            spell_suggestions = redis_service.spell_check(q)
+            if spell_suggestions:
+                corrected = q
+                for orig, sugg in spell_suggestions.items():
+                    corrected = corrected.replace(orig, sugg)
+                if corrected != q and corrected.lower() not in seen:
+                    spell_suggestion_text = corrected
+        
+        return {
+            "suggestions": suggestions,
+            "spell_suggestion": spell_suggestion_text,
+            "query": q
+        }
+        
+    except Exception as e:
+        print(f"Autocomplete error: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"suggestions": [], "spell_suggestion": None}
+
+# ============================================
+# Vector Search Endpoints
+# ============================================
+
+
+@app.get("/api/search/vector")
+def vector_search(
+    q: str = "",
+    category: str = "All",
+    source: str = "All",
+    offset: int = 0,
+    limit: int = 10,
+):
+    """Pure vector search - semantic similarity only."""
+    if not vector_search_enabled:
+        return {"error": "Vector search not enabled", "results": [], "total": 0}
+
+    if not q or len(q.strip()) < 2:
+        return {"error": "Query too short", "results": [], "total": 0}
+
+    try:
+        # Generate query embedding
+        query_embedding = embedder.embed_single(q.strip())
+        if not query_embedding:
+            return {"error": "Failed to generate embedding", "results": [], "total": 0}
+
+        # Build vector search query
+        vector_query = f"*=>[KNN {limit + offset} @content_vector $vec AS score]"
+
+        # Add filters
+        filter_parts = []
+        if category and category != "All":
+            filter_parts.append(f"@category:{{{category}}}")
+        if source and source != "All":
+            escaped_src = source.replace("-", "\\-").replace(" ", "\\ ")
+            filter_parts.append(f"@source:{{{escaped_src}}}")
+
+        if filter_parts:
+            vector_query = f"({' '.join(filter_parts)})=>[KNN {limit + offset} @content_vector $vec AS score]"
+
+        # Execute search
+        import numpy as np
+
+        result = redis_service.client.execute_command(
+            "FT.SEARCH",
+            redis_service.index_name,
+            vector_query,
+            "PARAMS",
+            "2",
+            "vec",
+            np.array(query_embedding, dtype=np.float32).tobytes(),
+            "SORTBY",
+            "score",
+            "LIMIT",
+            str(offset),
+            str(limit),
+            "RETURN",
+            "8",
+            "$.title",
+            "$.author",
+            "$.category",
+            "$.source",
+            "$.published_at",
+            "$.content",
+            "$.word_count",
+            "score",
+            "DIALECT",
+            "2",
         )
 
-        articles = []
-        for article in results.get("results", []):
-            articles.append(
-                {
-                    "title": article.get("title", ""),
-                    "category": article.get("category", ""),
-                    "source": article.get("source", ""),
-                    "date": article.get("published_at", ""),
-                    "id": article.get("id", ""),
-                }
+        # Parse results
+        total = result[0]
+        results = []
+
+        for i in range(1, len(result), 2):
+            doc_id = (
+                result[i].decode("utf-8") if isinstance(result[i], bytes) else result[i]
+            )
+            fields = result[i + 1]
+
+            doc = {"id": doc_id.replace("article:", "")}
+            for j in range(0, len(fields), 2):
+                key = (
+                    fields[j].decode("utf-8")
+                    if isinstance(fields[j], bytes)
+                    else fields[j]
+                )
+                value = (
+                    fields[j + 1].decode("utf-8")
+                    if isinstance(fields[j + 1], bytes)
+                    else fields[j + 1]
+                )
+
+                # Remove $.  prefix from field names
+                key = key.replace("$.", "") if key.startswith("$.") else key
+
+                if key == "score":
+                    doc["similarity_score"] = float(value)
+                else:
+                    doc[key] = value
+
+            results.append(doc)
+
+        return {"results": results, "total": total, "query": q, "search_type": "vector"}
+
+    except Exception as e:
+        print(f"Vector search error: {e}")
+        import traceback
+
+        traceback.print_exc()
+        return {"error": str(e), "results": [], "total": 0}
+
+
+@app.get("/api/search/hybrid")
+def hybrid_search(
+    q: str = "",
+    category: str = "All",
+    source: str = "All",
+    offset: int = 0,
+    limit: int = 10,
+    vector_weight: float = 0.5,
+):
+    """Hybrid search - combines text search (BM25) with vector similarity."""
+    if not vector_search_enabled:
+        return {"error": "Vector search not enabled", "results": [], "total": 0}
+
+    if not q or len(q.strip()) < 2:
+        return {"error": "Query too short", "results": [], "total": 0}
+
+    try:
+        # Get text search results
+        text_results = search(
+            q=q, category=category, source=source, offset=0, limit=50, fuzzy=False
+        )
+
+        # Get vector search results
+        vector_results = vector_search(
+            q=q, category=category, source=source, offset=0, limit=50
+        )
+
+        # Merge using Reciprocal Rank Fusion (RRF)
+        k = 60  # RRF constant
+        scores = {}
+
+        # Score text results
+        for rank, doc in enumerate(text_results.get("results", []), 1):
+            doc_id = doc["id"]
+            scores[doc_id] = scores.get(doc_id, 0) + (1 - vector_weight) / (k + rank)
+
+        # Score vector results
+        for rank, doc in enumerate(vector_results.get("results", []), 1):
+            doc_id = doc["id"]
+            scores[doc_id] = scores.get(doc_id, 0) + vector_weight / (k + rank)
+
+        # Sort by combined score
+        ranked_ids = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
+
+        # Fetch full documents
+        results = []
+        all_docs = {
+            doc["id"]: doc
+            for doc in text_results.get("results", [])
+            + vector_results.get("results", [])
+        }
+
+        for doc_id in ranked_ids[offset : offset + limit]:
+            if doc_id in all_docs:
+                doc = all_docs[doc_id].copy()
+                doc["hybrid_score"] = scores[doc_id]
+                results.append(doc)
+
+        return {
+            "results": results,
+            "total": len(ranked_ids),
+            "query": q,
+            "search_type": "hybrid",
+            "vector_weight": vector_weight,
+        }
+
+    except Exception as e:
+        print(f"Hybrid search error: {e}")
+        import traceback
+
+        traceback.print_exc()
+        return {"error": str(e), "results": [], "total": 0}
+
+
+@app.get("/api/similar/{doc_id}")
+def find_similar(doc_id: str, limit: int = 5):
+    """Find articles similar to a given article using vector similarity."""
+    if not vector_search_enabled:
+        return {"error": "Vector search not enabled", "similar": []}
+
+    try:
+        # Clean the doc_id
+        clean_id = doc_id.strip("/")
+        article_key = f"article:{clean_id}"
+
+        print(f"Looking for article: {article_key}")  # Debug
+
+        article_data = redis_service.client.execute_command(
+            "JSON.GET", article_key, "$"
+        )
+        if not article_data:
+            return {"error": f"Article not found: {doc_id}", "similar": []}
+
+        import json
+
+        # Handle both string and list responses
+        if isinstance(article_data, bytes):
+            article_data = article_data.decode("utf-8")
+        if isinstance(article_data, str):
+            parsed = json.loads(article_data)
+            article = parsed[0] if isinstance(parsed, list) else parsed
+        else:
+            article = (
+                article_data[0] if isinstance(article_data, list) else article_data
             )
 
-        # Get spell suggestions
-        spell_suggestions = redis_service.spell_check(q)
-        suggestion_text = None
-        if spell_suggestions:
-            corrected = q
-            for orig, sugg in spell_suggestions.items():
-                corrected = corrected.replace(orig, sugg)
-            if corrected != q:
-                suggestion_text = corrected
+        if "content_vector" not in article:
+            return {"error": "Article has no vector embedding", "similar": []}
 
-        return {"articles": articles, "spell_suggestion": suggestion_text}
+        vector = article["content_vector"]
+
+        # Search for similar articles (excluding this one)
+        import numpy as np
+
+        result = redis_service.client.execute_command(
+            "FT.SEARCH",
+            redis_service.index_name,
+            f"*=>[KNN {limit + 1} @content_vector $vec AS score]",
+            "PARAMS",
+            "2",
+            "vec",
+            np.array(vector, dtype=np.float32).tobytes(),
+            "SORTBY",
+            "score",
+            "LIMIT",
+            "0",
+            str(limit + 1),
+            "RETURN",
+            "6",
+            "$.title",
+            "$.author",
+            "$.category",
+            "$.source",
+            "$.published_at",
+            "score",
+            "DIALECT",
+            "2",
+        )
+
+        # Parse results and exclude the source article
+        similar = []
+        for i in range(1, len(result), 2):
+            found_id = (
+                result[i].decode("utf-8") if isinstance(result[i], bytes) else result[i]
+            )
+
+            # Skip the source article itself
+            if found_id == article_key:
+                continue
+
+            fields = result[i + 1]
+            doc = {"id": found_id.replace("article:", "")}
+
+            for j in range(0, len(fields), 2):
+                key = (
+                    fields[j].decode("utf-8")
+                    if isinstance(fields[j], bytes)
+                    else fields[j]
+                )
+                value = (
+                    fields[j + 1].decode("utf-8")
+                    if isinstance(fields[j + 1], bytes)
+                    else fields[j + 1]
+                )
+
+                # Remove $. prefix from field names
+                key = key.replace("$.", "") if key.startswith("$.") else key
+
+                if key == "score":
+                    doc["similarity_score"] = float(value)
+                else:
+                    doc[key] = value
+
+            similar.append(doc)
+
+            if len(similar) >= limit:
+                break
+
+        return {"article_id": doc_id, "similar": similar}
+
     except Exception as e:
-        return {"articles": [], "spell_suggestion": None, "error": str(e)}
+        print(f"Find similar error: {e}")
+        import traceback
+
+        traceback.print_exc()
+        return {"error": str(e), "similar": []}
+
+
+@app.get("/api/search/capabilities")
+def get_search_capabilities():
+    """Get available search capabilities."""
+    return {
+        "text_search": True,
+        "vector_search": vector_search_enabled,
+        "hybrid_search": vector_search_enabled,
+        "filters": ["category", "source"],
+        "sorting": ["relevance", "date_desc", "date_asc"],
+    }
 
 
 # ============================================
