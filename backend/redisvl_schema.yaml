@@ -1,0 +1,86 @@
+version: '0.1.0'
+
+index:
+  name: newswire_idx
+  prefix: article
+  storage_type: json
+
+fields:
+  # Existing TEXT fields
+  - name: $.title
+    type: text
+    attrs:
+      as_name: title
+      weight: 5.0
+      sortable: false
+  
+  - name: $.content
+    type: text
+    attrs:
+      as_name: content
+      weight: 1.0
+      sortable: false
+  
+  - name: $.summary
+    type: text
+    attrs:
+      as_name: summary
+      weight: 2.0
+      sortable: false
+  
+  - name: $.author
+    type: text
+    attrs:
+      as_name: author
+      weight: 1.0
+      sortable: false
+  
+  - name: $.published_at
+    type: text
+    attrs:
+      as_name: published_at
+      sortable: true
+  
+  # Existing TAG fields
+  - name: $.category
+    type: tag
+    attrs:
+      as_name: category
+      separator: ","
+  
+  - name: $.source
+    type: tag
+    attrs:
+      as_name: source
+      separator: ","
+  
+  - name: $.tags[*]
+    type: tag
+    attrs:
+      as_name: tags
+      separator: ","
+  
+  # Existing NUMERIC fields
+  - name: $.published_ts
+    type: numeric
+    attrs:
+      as_name: published_ts
+      sortable: true
+  
+  - name: $.word_count
+    type: numeric
+    attrs:
+      as_name: word_count
+      sortable: true
+  
+  # NEW: VECTOR field for semantic search
+  - name: $.content_vector
+    type: vector
+    attrs:
+      as_name: content_vector
+      algorithm: hnsw
+      dims: 1536
+      distance_metric: cosine
+      datatype: float32
+      m: 16
+      ef_construction: 200
