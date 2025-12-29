@@ -9,11 +9,9 @@ For realistic performance testing and demos, run the backend in the same region 
 
 You need to create an Azure Managed Redis instance with the following specifications:
 
-- **SKU:** Balanced B1 
+- **SKU:** <>
 - **Features Required:** RediSearch, RedisJson module enabled
 - **Region:** Any (recommend same region as your location for better latency)
-
-> 💡 **Tip:** For testing with 100 documents, B0/B1 provides comfortable headroom and good performance.
 
 ### 2. Python Environment
 
