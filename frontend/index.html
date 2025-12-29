@@ -612,13 +612,7 @@
 
             // Prevent infinite loop - track if we should search
             const shouldAutoSearch = useRef(false);
-
-            // useEffect(() => {
-            //     // Wait for categories/sources to load, then show initial results
-            //     if (categories.length > 0 && sources.length > 0) {
-            //         performSearch('', 0); // Load all articles, no filters
-            //     }
-            // }, [categories, sources]);
+            // const autocompleteTimer = useRef(null);
 
             // AUTO-SEARCH: Only when filters change AND we have a query or active filters
             useEffect(() => {
