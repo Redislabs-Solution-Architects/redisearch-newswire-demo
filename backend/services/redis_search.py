@@ -364,9 +364,10 @@ class RedisSearchService:
             cmd_args.extend(
                 [
                     "RETURN",
-                    "7",
+                    "8",
                     "title",
                     "summary",
+                    "content",
                     "author",
                     "category",
                     "published_at",
@@ -393,9 +394,10 @@ class RedisSearchService:
             cmd_args.extend(
                 [
                     "RETURN",
-                    "7",
+                    "8",
                     "title",
                     "summary",
+                    "content",
                     "author",
                     "category",
                     "published_at",
