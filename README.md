@@ -1,4 +1,3 @@
-**⚠️ Important:**
 This demo uses relative API paths (/api) in the frontend so the UI and backend can be deployed together on the same host (VM, container, etc.).
 
 ✅ Best practice:
