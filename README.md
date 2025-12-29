@@ -1,25 +1,5 @@
-# RediSearch NewsWire Demo
-<img width="1502" height="742" alt="image" src="https://github.com/user-attachments/assets/58567b35-f134-427c-bba6-a28c9f0da774" />
-
 **⚠️ Important:**
 This demo uses relative API paths (/api) in the frontend so the UI and backend can be deployed together on the same host (VM, container, etc.).
-
-**Latency Expectations (Important)**
-| Deployment                                     | Typical Latency |
-| ---------------------------------------------- | --------------- |
-| **Backend on Azure VM (same region as Redis)** | **~1.5–2 ms**   |
-| **Backend on local laptop → Azure Redis**      | **~35–70 ms**   |
-
-**Why this happens**
-
-When running on an Azure VM in the same region as Redis:
-
-- Traffic stays inside Azure’s backbone network
-- Very low RTT and consistent performance
-
-When running from a local machine:
-- Requests traverse the public internet
-- TLS + WAN latency dominates total response time
 
 ✅ Best practice:
 For realistic performance testing and demos, run the backend in the same region as your Redis instance.
@@ -30,7 +10,7 @@ For realistic performance testing and demos, run the backend in the same region 
 
 You need to create an Azure Managed Redis instance with the following specifications:
 
-- **SKU:** Balanced B0/B1 
+- **SKU:** Balanced B1 
 - **Features Required:** RediSearch, RedisJson module enabled
 - **Region:** Any (recommend same region as your location for better latency)
 
@@ -51,8 +31,7 @@ You need to create an Azure Managed Redis instance with the following specificat
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/redisearch-newswire-demo.git
-cd redisearch-newswire-demo
+git clone -b branch-1 --single-branch https://github.com/Redislabs-Solution-Architects/redisearch-newswire-demo
 ```
 
 ### 2. Set up virtual environment
