@@ -78,9 +78,15 @@ cp .env.template .env
 
 Edit `.env` with your actual Azure Managed Redis credentials:
 ```env
-AMR_HOST=your-redis-instance.redis.cache.windows.net
+AMR_HOST=your-redis-instance.westus2.redis.azure.net
 AMR_PORT=10000
 AMR_PASSWORD=your-redis-password-here
+# Azure OpenAI Configuration
+AZURE_OPENAI_ENDPOINT=your-openai-instance-endpoint
+AZURE_OPENAI_KEY=your-openai-key
+AZURE_OPENAI_DEPLOYMENT=your-openai-deployment
+AZURE_OPENAI_API_VERSION=your-azure-version
+EMBEDDING_DIMENSIONS=1536
 ```
 
 > 🔑 **Where to find credentials:**
@@ -92,29 +98,25 @@ AMR_PASSWORD=your-redis-password-here
 ### 4. Install dependencies
 
 ```bash
+sudo apt install python3.11 python3.11-venv python3.11-dev -y
+python3.11 --version
+python3.11 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 5. Create the RediSearch index
+### 5. Load sample data & Create the RediSearch index
 
 ```bash
-cd backend
-python create_index.py
-```
+python backend/setup_demo.py --docs 100
 
+```
+This loads documents from your parquet file into Redis. The small sample takes ~30 seconds.
 This creates the `newswire_idx` index with the proper schema for searching news articles.
 
-### 6. Load sample data
-
+### 7. Run & start API server
 ```bash
-python load_sample_data.py
-```
-
-This loads documents from your parquet file into Redis. The small sample takes ~30 seconds.
-
-### 7. Start API server
-```bash
-python -m uvicorn main:app --host 0.0.0.0 --port 8000
+python backend/main.py
 ```
 
 ### 8. Open in browser
@@ -136,5 +138,5 @@ Make sure port 8000 is allowed in your Azure VM network rules.
 
 To delete all indexed data:
 ```bash
-redis-cli FT.DROPINDEX newswire_idx DD
+FLUSHDB
 ```
