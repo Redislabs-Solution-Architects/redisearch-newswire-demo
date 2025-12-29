@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse
 from typing import Optional, List
 import os
 from pathlib import Path
+import hashlib
 
 # Import your existing redis service
 from services.redis_search import RedisSearchService
@@ -27,7 +28,7 @@ redis_service = RedisSearchService()
 
 # Initialize embedder for vector search
 try:
-    embedder = NewsEmbedder()
+    embedder = NewsEmbedder(enable_cache=True, similarity_threshold=0.90)
     vector_search_enabled = True
     print("✅ Vector search enabled")
 except Exception as e:
@@ -35,9 +36,135 @@ except Exception as e:
     vector_search_enabled = False
     print(f"⚠️  Vector search disabled: {e}")
 
+
+# Helper functions for exact Query Caching
+def get_query_cache_key(
+    search_type: str,
+    query: str,
+    category: str,
+    source: str,
+    sort: str,
+    offset: int,
+    limit: int,
+) -> str:
+    """
+    Generate consistent cache key for query results
+
+    Args:
+        search_type: "text", "vector", or "hybrid"
+        query: Search query text
+        category: Category filter
+        source: Source filter
+        sort: Sort parameter
+        offset: Pagination offset
+        limit: Results limit
+
+    Returns:
+        Cache key string
+    """
+    # Normalize parameters
+    normalized_query = query.lower().strip()
+    normalized_category = category.lower().strip() if category else "all"
+    normalized_source = source.lower().strip() if source else "all"
+    normalized_sort = sort.lower().strip()
+
+    # Create cache key components
+    key_parts = [
+        search_type,
+        normalized_query,
+        normalized_category,
+        normalized_source,
+        normalized_sort,
+        str(offset),
+        str(limit),
+    ]
+
+    # Join with separators
+    key_string = ":".join(key_parts)
+
+    # Use MD5 hash to keep keys short
+    key_hash = hashlib.md5(key_string.encode("utf-8")).hexdigest()
+
+    return f"query_cache:{search_type}:{key_hash}"
+
+
+def get_cached_result(cache_key: str):
+    """
+    Try to get cached query result from Redis
+
+    Args:
+        cache_key: The cache key
+
+    Returns:
+        Cached result dict or None
+    """
+    try:
+        cached_value = redis_service.client.get(cache_key)
+        if cached_value:
+            # Parse JSON
+            import json
+
+            if isinstance(cached_value, bytes):
+                cached_value = cached_value.decode("utf-8")
+            return json.loads(cached_value)
+    except Exception as e:
+        print(f"⚠️  Cache read error: {e}")
+
+    return None
+
+
+def save_cached_result(cache_key: str, result: dict, ttl: int = 60):
+    """Save query result to Redis cache"""
+    try:
+        import json
+
+        # Serialize result to JSON
+        cached_value = json.dumps(result)
+
+        # Save with TTL (use SET with EX instead of SETEX if decode_responses=True)
+        redis_service.client.set(cache_key, cached_value, ex=ttl)
+
+    except Exception as e:
+        print(f"⚠️  Cache write error: {e}")
+
+
 # ============================================
 # API Endpoints
 # ============================================
+
+
+@app.get("/api/debug-cache")
+def debug_cache():
+    """Debug cache functionality"""
+    import time
+
+    try:
+        # Test 1: Can we access redis_service.client?
+        can_ping = redis_service.client.ping()
+
+        # Test 2: Try to set a simple value
+        test_key = "debug:test:123"
+        redis_service.client.set(test_key, "test_value", ex=60)
+
+        # Test 3: Try to get it back
+        retrieved = redis_service.client.get(test_key)
+
+        # Test 4: Try cache helper functions
+        cache_key = get_query_cache_key("text", "test", "All", "All", "relevance", 0, 5)
+        test_data = {"test": "data", "timestamp": time.time()}
+        save_cached_result(cache_key, test_data, ttl=60)
+        retrieved_cached = get_cached_result(cache_key)
+
+        return {
+            "redis_ping": can_ping,
+            "direct_set_get": retrieved,
+            "cache_key": cache_key,
+            "cache_saved": test_data,
+            "cache_retrieved": retrieved_cached,
+            "cache_working": retrieved_cached is not None,
+        }
+    except Exception as e:
+        return {"error": str(e), "traceback": __import__("traceback").format_exc()}
 
 
 @app.get("/api/search")
@@ -51,12 +178,40 @@ def search(
     limit: int = 10,
 ):
     """Search articles with support for multiple categories and sources."""
+    import time
+
+    start_total = time.time()
+
+    print(f"🔍 DEBUG: Starting search for q='{q}'")
+    # Generate cache key
+    cache_key = get_query_cache_key(
+        search_type="text",
+        query=q,
+        category=category,
+        source=source,
+        sort=sort,
+        offset=offset,
+        limit=limit,
+    )
+    print(f"🔍 DEBUG: Cache key = {cache_key}")
+    # Try to get from cache
+    cached_result = get_cached_result(cache_key)
+    print(f"🔍 DEBUG: Cached result = {cached_result is not None}")
+    if cached_result:
+        cache_time = (time.time() - start_total) * 1000
+        print(f"⚡ [TEXT SEARCH - CACHE HIT] q='{q[:30]}' | Time: {cache_time:.1f}ms")
+
+        # Add current cache retrieval time
+        cached_result["latency_ms"] = cache_time
+
+        return cached_result
+
     has_query = q and len(q.strip()) >= 2
 
-    # Handle multiple categories (comma-separated) - use lowercase for Redis
+    # Handle multiple categories (comma-separated)
     categories = None
     if category and category != "All":
-        cat_list = [c.strip() for c in category.split(",") if c.strip()]  # Remove .lower()
+        cat_list = [c.strip() for c in category.split(",") if c.strip()]
         if len(cat_list) == 1:
             categories = cat_list[0]
         elif len(cat_list) > 1:
@@ -71,6 +226,8 @@ def search(
         elif len(src_list) > 1:
             source_param = src_list
 
+    # Time the Redis search
+    start_redis = time.time()
     response = redis_service.search(
         query=q if has_query else "",
         category=categories,
@@ -82,23 +239,36 @@ def search(
         limit=limit,
         highlight=has_query,
     )
+    redis_time = (time.time() - start_redis) * 1000
 
     # Strip "article:" prefix from result IDs for frontend
+    start_processing = time.time()
     if "results" in response:
         for result in response["results"]:
             if "id" in result and result["id"].startswith("article:"):
                 result["id"] = result["id"].replace("article:", "")
-            
-            # Fetch content for preview if not present (text search doesn't return it)
+
+            # Content is now included in RETURN fields
             if "content" not in result or not result.get("content"):
-                try:
-                    doc_id = f"article:{result['id']}"
-                    doc = redis_service.get_document(doc_id)
-                    if doc and "content" in doc:
-                        result["content"] = doc["content"][:300]  # First 300 chars for preview
-                except Exception as e:
-                    print(f"Warning: Could not fetch content for {result['id']}: {e}")
-                    result["content"] = ""
+                result["content"] = ""
+
+    processing_time = (time.time() - start_processing) * 1000
+    total_time = (time.time() - start_total) * 1000
+
+    # Add latency to response
+    response["latency_ms"] = total_time
+
+    # Log timing breakdown
+    num_results = len(response.get("results", []))
+    print(
+        f"⏱️  [TEXT SEARCH] q='{q[:30]}' | Redis: {redis_time:.1f}ms | Processing: {processing_time:.1f}ms | Total: {total_time:.1f}ms | Results: {num_results}"
+    )
+
+    # Save to cache (without latency_ms)
+    cache_response = response.copy()
+    if "latency_ms" in cache_response:
+        del cache_response["latency_ms"]
+    save_cached_result(cache_key, cache_response, ttl=60)
 
     return response
 
@@ -378,28 +548,25 @@ def autocomplete(q: str, limit: int = 7):
     try:
         if not q or len(q) < 2:
             return {"suggestions": [], "spell_suggestion": None}
-        
+
         # Get suggestions from curated dictionary
         suggestions_raw = redis_service.autocomplete(q, limit=limit * 2, fuzzy=False)
-        
+
         # Parse and format suggestions
         suggestions = []
         seen = set()
-        
+
         for sugg in suggestions_raw[:limit]:
             if isinstance(sugg, bytes):
-                sugg = sugg.decode('utf-8')
-            
+                sugg = sugg.decode("utf-8")
+
             if sugg and sugg.lower() not in seen:
                 # Determine suggestion type
                 sugg_type = "article" if len(sugg) > 40 else "topic"
-                
-                suggestions.append({
-                    "title": sugg,
-                    "type": sugg_type
-                })
+
+                suggestions.append({"title": sugg, "type": sugg_type})
                 seen.add(sugg.lower())
-        
+
         # Add spell correction if needed
         spell_suggestion_text = None
         if len(suggestions) < 3:  # If few results, try spell check
@@ -410,18 +577,20 @@ def autocomplete(q: str, limit: int = 7):
                     corrected = corrected.replace(orig, sugg)
                 if corrected != q and corrected.lower() not in seen:
                     spell_suggestion_text = corrected
-        
+
         return {
             "suggestions": suggestions,
             "spell_suggestion": spell_suggestion_text,
-            "query": q
+            "query": q,
         }
-        
+
     except Exception as e:
         print(f"Autocomplete error: {e}")
         import traceback
+
         traceback.print_exc()
         return {"suggestions": [], "spell_suggestion": None}
+
 
 # ============================================
 # Vector Search Endpoints
@@ -437,6 +606,10 @@ def vector_search(
     limit: int = 10,
 ):
     """Pure vector search - semantic similarity only."""
+    import time
+
+    start_total = time.time()
+
     if not vector_search_enabled:
         return {"error": "Vector search not enabled", "results": [], "total": 0}
 
@@ -445,7 +618,10 @@ def vector_search(
 
     try:
         # Generate query embedding
+        start_embed = time.time()
         query_embedding = embedder.embed_single(q.strip())
+        embed_time = (time.time() - start_embed) * 1000
+
         if not query_embedding:
             return {"error": "Failed to generate embedding", "results": [], "total": 0}
 
@@ -466,6 +642,7 @@ def vector_search(
         # Execute search
         import numpy as np
 
+        start_redis = time.time()
         result = redis_service.client.execute_command(
             "FT.SEARCH",
             redis_service.index_name,
@@ -492,8 +669,10 @@ def vector_search(
             "DIALECT",
             "2",
         )
+        redis_time = (time.time() - start_redis) * 1000
 
         # Parse results
+        start_parse = time.time()
         total = result[0]
         results = []
 
@@ -526,7 +705,21 @@ def vector_search(
 
             results.append(doc)
 
-        return {"results": results, "total": total, "query": q, "search_type": "vector"}
+        parse_time = (time.time() - start_parse) * 1000
+        total_time = (time.time() - start_total) * 1000
+
+        # Log timing breakdown
+        print(
+            f"⏱️  [VECTOR SEARCH] q='{q[:30]}' | Embedding: {embed_time:.1f}ms | Redis: {redis_time:.1f}ms | Parse: {parse_time:.1f}ms | Total: {total_time:.1f}ms | Results: {len(results)}"
+        )
+
+        return {
+            "results": results,
+            "total": total,
+            "query": q,
+            "search_type": "vector",
+            "latency_ms": total_time,  # ADD THIS!
+        }
 
     except Exception as e:
         print(f"Vector search error: {e}")
@@ -546,6 +739,10 @@ def hybrid_search(
     vector_weight: float = 0.5,
 ):
     """Hybrid search - combines text search (BM25) with vector similarity."""
+    import time
+
+    start_total = time.time()
+
     if not vector_search_enabled:
         return {"error": "Vector search not enabled", "results": [], "total": 0}
 
@@ -554,16 +751,21 @@ def hybrid_search(
 
     try:
         # Get text search results
+        start_text = time.time()
         text_results = search(
             q=q, category=category, source=source, offset=0, limit=50, fuzzy=False
         )
+        text_time = (time.time() - start_text) * 1000
 
         # Get vector search results
+        start_vector = time.time()
         vector_results = vector_search(
             q=q, category=category, source=source, offset=0, limit=50
         )
+        vector_time = (time.time() - start_vector) * 1000
 
         # Merge using Reciprocal Rank Fusion (RRF)
+        start_merge = time.time()
         k = 60  # RRF constant
         scores = {}
 
@@ -594,12 +796,21 @@ def hybrid_search(
                 doc["hybrid_score"] = scores[doc_id]
                 results.append(doc)
 
+        merge_time = (time.time() - start_merge) * 1000
+        total_time = (time.time() - start_total) * 1000
+
+        # Log timing breakdown
+        print(
+            f"⏱️  [HYBRID SEARCH] q='{q[:30]}' | Text: {text_time:.1f}ms | Vector: {vector_time:.1f}ms | Merge: {merge_time:.1f}ms | Total: {total_time:.1f}ms | Results: {len(results)}"
+        )
+
         return {
             "results": results,
             "total": len(ranked_ids),
             "query": q,
             "search_type": "hybrid",
             "vector_weight": vector_weight,
+            "latency_ms": total_time,  # ADD THIS!
         }
 
     except Exception as e:
