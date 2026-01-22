@@ -1,17 +1,35 @@
 import redis
 import time
+import socket
 from config import AMR_HOST, AMR_PORT, AMR_PASSWORD
 
 
 class RedisSearchService:
     def __init__(self):
-        self.client = redis.Redis(
+        from redis.connection import ConnectionPool, SSLConnection
+        
+        # Create connection pool with aggressive keepalive
+        self.pool = ConnectionPool(
+            connection_class=SSLConnection,  # ⬅️ Use SSLConnection class
             host=AMR_HOST,
             port=int(AMR_PORT),
             password=AMR_PASSWORD,
-            ssl=True,
-            decode_responses=True
+            decode_responses=True,
+            max_connections=100,
+            socket_keepalive=True,
+            socket_keepalive_options={
+                socket.TCP_KEEPIDLE: 10,
+                socket.TCP_KEEPINTVL: 5,
+                socket.TCP_KEEPCNT: 3
+            },
+            health_check_interval=5,
+            retry_on_timeout=True,
+            socket_connect_timeout=5,
+            socket_read_size=65536,
+            client_name="fastapi-search"
         )
+        
+        self.client = redis.Redis(connection_pool=self.pool)
         self.index_name = "newswire_idx"
     
     def get_categories(self):
@@ -106,6 +124,7 @@ class RedisSearchService:
             
             result = self.client.execute_command(
                 "FT.AGGREGATE", self.index_name, search_query,
+                "LOAD", "1", "@category",
                 "GROUPBY", "1", "@category",
                 "REDUCE", "COUNT", "0", "AS", "count",
                 "SORTBY", "2", "@count", "DESC",
@@ -201,9 +220,9 @@ class RedisSearchService:
         return None
     
     def search(self, query="", category=None, source=None, author=None, 
-               use_fuzzy=False, sort_by="relevance", offset=0, limit=10, highlight=True):
+               use_fuzzy=False, sort_by="relevance", offset=0, limit=5, highlight=True):
         """
-        Execute search and return results with timing.
+        Execute search and return results with detailed timing.
         
         Args:
             query: Search query text
@@ -216,7 +235,11 @@ class RedisSearchService:
             limit: Number of results
             highlight: Enable result highlighting
         """
-        start = time.perf_counter()
+        total_start = time.perf_counter()
+        query_build_start = time.perf_counter()
+        
+        # Check if this is a text query or just filtering
+        has_text_query = query and query.strip()
         
         query_parts = []
         
@@ -224,6 +247,7 @@ class RedisSearchService:
         if query and query.strip():
             if use_fuzzy:
                 words = query.strip().split()
+                # True fuzzy matching with Levenshtein distance (%%word%% = 1 edit, %%%word%%% = 2 edits)
                 fuzzy_terms = [f"%%{word}%%" for word in words if word]
                 query_parts.append(" ".join(fuzzy_terms))
             else:
@@ -248,29 +272,37 @@ class RedisSearchService:
         
         cmd_args = [self.index_name, search_query]
         
-        if highlight and query and query.strip():
-            cmd_args.extend([
-                "RETURN", "7", "title", "summary", "author", "category", "published_at", "source", "word_count",
-                "HIGHLIGHT", "FIELDS", "1", "title", "TAGS", "<mark>", "</mark>",
-                "SUMMARIZE", "FIELDS", "1", "summary", "FRAGS", "1", "LEN", "50"
-            ])
-        else:
-            cmd_args.extend([
-                "RETURN", "7", "title", "summary", "author", "category", "published_at", "source", "word_count"
-            ])
+        # Return short_summary for fast queries (sub-millisecond target)
+        cmd_args.extend([
+            "RETURN", "3", "title", "short_summary", "published_at",
+            # "RETURN", "5", "title", "word_count", "published_at","source","category"
+        ])
         
         if sort_by == "date_desc":
             cmd_args.extend(["SORTBY", "published_ts", "DESC"])
         elif sort_by == "date_asc":
             cmd_args.extend(["SORTBY", "published_ts", "ASC"])
+        elif not has_text_query:
+            # If filtering only (no text search), default to date sort for consistency
+            cmd_args.extend(["SORTBY", "published_ts", "DESC"])
         
         cmd_args.extend(["LIMIT", offset, limit])
         
+        query_build_time = (time.perf_counter() - query_build_start) * 1000
+        
+        # TIMING: Redis execution
+        redis_start = time.perf_counter()
+        
         try:
             raw_results = self.client.execute_command("FT.SEARCH", *cmd_args)
-            latency_ms = (time.perf_counter() - start) * 1000
+            redis_time = (time.perf_counter() - redis_start) * 1000
             
+            # TIMING: Result parsing
+            parse_start = time.perf_counter()
             results = self._parse_results(raw_results)
+            parse_time = (time.perf_counter() - parse_start) * 1000
+            
+            total_time = (time.perf_counter() - total_start) * 1000
             
             command = f'FT.SEARCH {self.index_name} "{search_query}"'
             if sort_by != "relevance":
@@ -280,14 +312,20 @@ class RedisSearchService:
                 }.get(sort_by, "")
                 command += f" SORTBY {sort_field}"
             command += f" LIMIT {offset} {limit}"
-            
+            print(f"DEBUG: raw_results[0]={raw_results[0]}, len(results)={len(results)}")
             return {
                 "results": results,
-                "latency_ms": latency_ms,
+                "latency_ms": redis_time,
                 "command": command,
                 "total": raw_results[0] if raw_results else 0,
                 "offset": offset,
-                "limit": limit
+                "limit": limit,
+                "performance": {
+                    "query_build_ms": round(query_build_time, 3),
+                    "redis_execution_ms": round(redis_time, 3),
+                    "result_parsing_ms": round(parse_time, 3),
+                    "search_service_total_ms": round(total_time, 3)
+                }
             }
         
         except Exception as e:
@@ -299,7 +337,13 @@ class RedisSearchService:
                 "error": str(e),
                 "total": 0,
                 "offset": offset,
-                "limit": limit
+                "limit": limit,
+                "performance": {
+                    "query_build_ms": 0,
+                    "redis_execution_ms": 0,
+                    "result_parsing_ms": 0,
+                    "search_service_total_ms": 0
+                }
             }
     
     def _parse_results(self, raw):
