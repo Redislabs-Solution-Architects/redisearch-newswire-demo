@@ -1,10 +1,12 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from typing import Optional, List
 import os
 from pathlib import Path
+import time
+import asyncio
 
 # Import your existing redis service
 from services.redis_search import RedisSearchService
@@ -25,9 +27,48 @@ app.add_middleware(
 redis_service = RedisSearchService()
 
 # ============================================
+# Startup Event - Warm Cache
+# ============================================
+async def keep_redis_warm():
+    """Ping Redis every 10 seconds to keep connection alive"""
+    while True:
+        try:
+            redis_service.client.ping()
+        except Exception as e:
+            print(f"Keepalive error: {e}")
+        await asyncio.sleep(10)
+
+@app.on_event("startup")
+async def startup_event():
+    """Start background tasks on startup"""
+    print("🔥 Warming up Redis cache...")
+    try:
+        # Warmup with actual Redis commands (not just search function)
+        redis_service.client.ping()
+        print("  ✅ Redis connection established")
+        
+        # Run multiple queries to warm connection pool
+        for query in ["test", "climate", "trump", "news", "technology"]:
+            redis_service.client.execute_command(
+                "FT.SEARCH", "newswire_idx", query, "LIMIT", "0", "5"
+            )
+        print("  ✅ Connection pool warmed (5 queries)")
+        
+        # Also warm the search function
+        redis_service.search(query="climate", limit=3)
+        print("  ✅ Search function warmed")
+        
+        print("✅ Cache warmed up!")
+    except Exception as e:
+        print(f"⚠️ Cache warmup failed: {e}")
+    
+    # Start keepalive task
+    asyncio.create_task(keep_redis_warm())
+    print("✅ Redis keepalive task started")
+
+# ============================================
 # API Endpoints
 # ============================================
-
 
 @app.get("/api/search")
 def search(
@@ -37,10 +78,13 @@ def search(
     sort: str = "relevance",
     fuzzy: bool = False,
     offset: int = 0,
-    limit: int = 10,
+    limit: int = 5,
 ):
-    """Search articles with support for multiple categories and sources."""
-    has_query = q and len(q.strip()) >= 2
+    """Search articles with detailed performance metrics."""
+    # TIMING: Total endpoint time
+    endpoint_start = time.perf_counter()
+    
+    has_query = q and len(q.strip()) >= 3
 
     # Handle multiple categories (comma-separated)
     categories = None
@@ -60,6 +104,7 @@ def search(
         elif len(src_list) > 1:
             source_param = src_list
 
+    
     response = redis_service.search(
         query=q if has_query else "",
         category=categories,
@@ -71,8 +116,34 @@ def search(
         limit=limit,
         highlight=has_query,
     )
-
-    return response
+    
+    # Get performance metrics from search service
+    perf = response.get("performance", {})
+    
+    # Build response
+    result = {
+        "results": response.get("results", []),
+        "total": response.get("total", 0),
+        "latency_ms": response.get("latency_ms", 0),
+        "command": response.get("command", ""),
+        "offset": response.get("offset", 0),
+        "limit": response.get("limit", 10),
+    }
+    
+    
+    
+    # Add comprehensive performance metrics
+    result["performance"] = {
+        "redis_execution_ms": perf.get("redis_execution_ms", 0)
+    }
+    
+    # Log to console
+    print(f"""
+    📊 Search Performance for "{q}":
+      ├─ Redis Execution: {perf.get("redis_execution_ms", 0):.3f}ms
+    """)
+    
+    return result
 
 
 @app.get("/api/categories")
@@ -173,11 +244,11 @@ def get_category_counts(q: str = "", source: str = "All"):
                     escaped_src = src_list[0].replace("-", "\\-").replace(" ", "\\ ")
                     query_parts.append(f"@source:{{{escaped_src}}}")
                 elif len(src_list) > 1:
-                    source_queries = []
+                    escaped_sources = []
                     for s in src_list:
                         escaped_s = s.replace("-", "\\-").replace(" ", "\\ ")
-                        source_queries.append(f"@source:{{{escaped_s}}}")
-                    query_parts.append(f"({' | '.join(source_queries)})")
+                        escaped_sources.append(escaped_s)
+                    query_parts.append(f"@source:{{{' | '.join(escaped_sources)}}}")
 
             # Add category filter
             query_parts.append(f"@category:{{{cat}}}")
@@ -198,7 +269,7 @@ def get_category_counts(q: str = "", source: str = "All"):
 
 @app.get("/api/article/{doc_id:path}")
 def get_article(doc_id: str):
-    """Get full article by ID."""
+    """Get full article by ID with full_content."""
     doc = redis_service.get_document(doc_id)
 
     if not doc:
@@ -289,45 +360,6 @@ def get_homepage():
         print(f"ERROR in get_homepage: {e}")
         return {"error": str(e), "top_stories": [], "category_sections": []}
 
-
-@app.get("/api/trending")
-def get_trending():
-    """Get trending topics based on tags."""
-    try:
-        # Get unique tags using FT.TAGVALS
-        tag_values = redis_service.client.execute_command(
-            "FT.TAGVALS", redis_service.index_name, "tags"
-        )
-
-        trending = []
-        for tag in tag_values[:50]:
-            if isinstance(tag, bytes):
-                tag = tag.decode()
-
-            if not tag or len(tag) < 2:
-                continue
-
-            escaped_tag = tag.replace("-", "\\-").replace(" ", "\\ ")
-            try:
-                count_result = redis_service.client.execute_command(
-                    "FT.SEARCH",
-                    redis_service.index_name,
-                    f"@tags:{{{escaped_tag}}}",
-                    "LIMIT",
-                    "0",
-                    "0",
-                )
-                count = count_result[0] if count_result else 0
-                if count > 0:
-                    trending.append({"tag": tag, "count": count})
-            except:
-                continue
-
-        trending.sort(key=lambda x: x["count"], reverse=True)
-        return {"trending": trending[:15]}
-    except Exception as e:
-        print(f"ERROR in get_trending: {e}")
-        return {"trending": [], "error": str(e)}
 
 
 @app.get("/api/autocomplete")
