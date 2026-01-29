@@ -17,33 +17,8 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #ffffff;
+            background: #f9fafb;
             color: #111827;
-        }
-
-        .stats-banner {
-            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-            color: white;
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .stats-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 15px;
-        }
-
-        .stats-item-value {
-            font-weight: 600;
-            font-size: 18px;
         }
 
         .container {
@@ -54,27 +29,36 @@
 
         .header {
             text-align: center;
-            padding: 30px 0 20px 0;
+            padding: 20px 0;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
         }
 
         .header h1 {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 600;
             color: #111827;
+            margin-bottom: 8px;
         }
 
         .header p {
             color: #6b7280;
             font-size: 14px;
-            margin-top: 8px;
+        }
+
+        .search-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
         }
 
         .search-row {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             align-items: center;
-            margin-bottom: 20px;
-            position: relative;
+            margin-bottom: 16px;
         }
 
         .search-box {
@@ -87,185 +71,17 @@
             padding: 14px 20px;
             font-size: 15px;
             border: 1px solid #e5e7eb;
-            border-radius: 24px;
+            border-radius: 8px;
             outline: none;
             transition: border-color 0.2s;
         }
 
         .search-box input:focus {
-            border-color: #d1d5db;
+            border-color: #3b82f6;
         }
 
         .search-box input::placeholder {
             color: #9ca3af;
-        }
-
-        .autocomplete-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            margin-top: 8px;
-            z-index: 1000;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .autocomplete-section {
-            padding: 12px 16px;
-        }
-
-        .autocomplete-section-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .autocomplete-item {
-            padding: 10px 12px;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: background 0.2s;
-            margin-bottom: 4px;
-        }
-
-        .autocomplete-item:hover {
-            background: #f3f4f6;
-        }
-
-        .autocomplete-item-title {
-            font-size: 14px;
-            color: #111827;
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-
-        .autocomplete-item-meta {
-            font-size: 12px;
-            color: #6b7280;
-        }
-
-        .autocomplete-spell {
-            padding: 10px 12px;
-            background: #fef3c7;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            margin-bottom: 4px;
-        }
-
-        .autocomplete-spell:hover {
-            background: #fde68a;
-        }
-
-        .autocomplete-footer {
-            padding: 8px 16px;
-            border-top: 1px solid #e5e7eb;
-            font-size: 12px;
-            color: #9ca3af;
-            text-align: center;
-        }
-
-        .recent-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 10px 16px;
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 20px;
-            font-size: 14px;
-            color: #374151;
-            cursor: pointer;
-            transition: background 0.2s;
-            position: relative;
-        }
-
-        .recent-btn:hover {
-            background: #f3f4f6;
-        }
-
-        .recent-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            margin-top: 8px;
-            z-index: 1000;
-            min-width: 320px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .recent-dropdown-header {
-            padding: 12px 16px;
-            border-bottom: 1px solid #e5e7eb;
-            font-weight: 600;
-            font-size: 14px;
-            color: #111827;
-        }
-
-        .recent-item {
-            padding: 12px 16px;
-            border-bottom: 1px solid #f3f4f6;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .recent-item:hover {
-            background: #f9fafb;
-        }
-
-        .recent-item:last-child {
-            border-bottom: none;
-        }
-
-        .recent-item-query {
-            font-size: 14px;
-            font-weight: 500;
-            color: #111827;
-            margin-bottom: 4px;
-        }
-
-        .recent-item-filters {
-            font-size: 12px;
-            color: #6b7280;
-            margin-bottom: 2px;
-        }
-
-        .recent-item-time {
-            font-size: 11px;
-            color: #9ca3af;
-        }
-
-        .recent-clear {
-            padding: 10px 16px;
-            text-align: center;
-            border-top: 1px solid #e5e7eb;
-            cursor: pointer;
-            font-size: 13px;
-            color: #dc2626;
-            transition: background 0.2s;
-        }
-
-        .recent-clear:hover {
-            background: #fef2f2;
-        }
-
-        .recent-empty {
-            padding: 24px 16px;
-            text-align: center;
-            color: #9ca3af;
-            font-size: 14px;
         }
 
         .fuzzy-toggle {
@@ -276,12 +92,74 @@
             color: #6b7280;
             cursor: pointer;
             user-select: none;
+            white-space: nowrap;
         }
 
         .fuzzy-toggle input {
             width: 18px;
             height: 18px;
             cursor: pointer;
+        }
+
+        .recent-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .recent-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .search-mode-container {
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 12px 16px;
+        }
+
+        .search-mode-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .search-mode-options {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .search-mode-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .search-mode-option input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #3b82f6;
+        }
+
+        .search-mode-option label {
+            cursor: pointer;
+            user-select: none;
         }
 
         .category-pills {
@@ -294,7 +172,6 @@
         }
 
         .category-pill {
-            position: relative;
             padding: 10px 20px;
             font-size: 14px;
             font-weight: 500;
@@ -317,23 +194,6 @@
             border-color: #111827;
         }
 
-        .category-pill .count {
-            display: none;
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: #ef4444;
-            color: white;
-            font-size: 10px;
-            padding: 3px 8px;
-            border-radius: 10px;
-            white-space: nowrap;
-        }
-
-        .category-pill:hover .count {
-            display: block;
-        }
-
         .main-layout {
             display: flex;
             gap: 30px;
@@ -346,6 +206,9 @@
 
         .filter-section {
             margin-bottom: 24px;
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
         }
 
         .filter-section h3 {
@@ -376,18 +239,14 @@
             cursor: pointer;
         }
 
+        .filter-section.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
         .results-container {
             flex: 1;
             min-width: 0;
-        }
-
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            font-size: 13px;
-            color: #6b7280;
         }
 
         .performance-metrics {
@@ -403,51 +262,39 @@
 
         .metric-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 8px;
         }
 
         .metric-label {
             font-size: 13px;
-            color: #1e40af;
+            color: #3b82f6;
             font-weight: 500;
         }
 
         .metric-value {
             font-size: 16px;
             font-weight: 600;
-            color: #1e40af;
-        }
-
-        .spell-check {
-            background: #fef3c7;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
-
-        .spell-check span {
-            color: #1d4ed8;
-            cursor: pointer;
-            font-weight: 500;
+            color: #111827;
         }
 
         .command-accordion {
-            background: #f9fafb;
+            margin-bottom: 16px;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
-            margin-bottom: 16px;
+            background: white;
+            overflow: hidden;
         }
 
         .command-header {
             padding: 12px 16px;
+            background: #f9fafb;
             cursor: pointer;
-            font-size: 14px;
-            color: #4b5563;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         .command-header:hover {
@@ -455,255 +302,164 @@
         }
 
         .command-content {
-            padding: 12px 16px;
-            border-top: 1px solid #e5e7eb;
-            font-family: monospace;
+            padding: 16px;
+            background: #1f2937;
+            color: #10b981;
+            font-family: 'Courier New', monospace;
             font-size: 13px;
-            color: #374151;
-            background: #f9fafb;
-            word-break: break-all;
-        }
-
-        .homepage-section {
-            margin-bottom: 40px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #111827;
-        }
-
-        .view-all-btn {
-            color: #3b82f6;
-            font-size: 14px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .view-all-btn:hover {
-            text-decoration: underline;
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
+            overflow-x: auto;
+            white-space: pre-wrap;
         }
 
         .article-card {
             background: white;
-            border: 1px solid #e5e7eb;
+            padding: 20px;
             border-radius: 8px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
+            margin-bottom: 16px;
+            border: 1px solid #e5e7eb;
+            transition: box-shadow 0.2s, border-color 0.2s;
         }
 
         .article-card:hover {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transform: translateY(-2px);
+            border-color: #d1d5db;
+        }
+
+        .similarity-score {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
 
         .article-card h3 {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             color: #111827;
-            line-height: 1.4;
             margin-bottom: 12px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+
+        .article-card h3:hover {
+            color: #3b82f6;
         }
 
         .article-card h3 mark {
-            background: #fef08a;
-            padding: 0 2px;
+            background: #fef3c7;
+            padding: 2px 4px;
+            border-radius: 2px;
         }
 
         .article-meta {
             display: flex;
-            gap: 12px;
             flex-wrap: wrap;
-            margin-bottom: 12px;
-            font-size: 12px;
+            gap: 16px;
+            font-size: 13px;
             color: #6b7280;
+            margin-bottom: 12px;
         }
 
         .article-summary {
-            color: #4b5563;
+            color: #374151;
+            font-size: 14px;
             line-height: 1.6;
-            font-size: 13px;
             margin-bottom: 12px;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
 
         .article-summary mark {
-            background: #fef08a;
-            padding: 0 2px;
+            background: #fef3c7;
+            padding: 2px 4px;
+            border-radius: 2px;
         }
 
-        .results-list .article-card {
-            padding: 20px 0;
-            border: none;
-            border-bottom: 1px solid #f3f4f6;
-            border-radius: 0;
-        }
-
-        .results-list .article-card:hover {
-            transform: none;
-            box-shadow: none;
-            background: #f9fafb;
-        }
-
-        .results-list .article-card h3 {
-            font-size: 18px;
-        }
-
-        .results-list .article-summary {
-            font-size: 14px;
-            -webkit-line-clamp: 4;
-        }
-
-        .view-article-btn {
-            background: #f3f4f6;
-            border: 1px solid #e5e7eb;
+        .find-similar-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             padding: 8px 16px;
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
             border-radius: 6px;
             font-size: 13px;
-            color: #374151;
+            color: #1e40af;
             cursor: pointer;
-            transition: background 0.2s;
-            display: inline-block;
+            transition: all 0.2s;
+            font-weight: 500;
         }
 
-        .view-article-btn:hover {
-            background: #e5e7eb;
+        .find-similar-btn:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
         }
 
         .load-more-btn {
             width: 100%;
-            padding: 12px;
-            margin-top: 20px;
-            background: #f3f4f6;
-            border: 1px solid #e5e7eb;
+            padding: 14px;
+            background: #3b82f6;
+            color: white;
+            border: none;
             border-radius: 8px;
-            font-size: 14px;
-            color: #374151;
+            font-size: 15px;
+            font-weight: 500;
             cursor: pointer;
+            margin-top: 16px;
             transition: background 0.2s;
         }
 
         .load-more-btn:hover {
-            background: #e5e7eb;
-        }
-
-        .article-panel {
-            width: 350px;
-            flex-shrink: 0;
-            border-left: 1px solid #e5e7eb;
-            padding-left: 20px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .article-panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .close-btn {
-            background: #fee2e2;
-            color: #dc2626;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .close-btn:hover {
-            background: #fecaca;
-        }
-
-        .full-article h2 {
-            font-size: 22px;
-            font-weight: 600;
-            color: #111827;
-            line-height: 1.3;
-            margin-bottom: 16px;
-        }
-
-        .full-article-meta {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            font-size: 13px;
-            color: #6b7280;
-        }
-
-        .full-article-content {
-            color: #374151;
-            line-height: 1.8;
-            font-size: 15px;
-            white-space: pre-wrap;
+            background: #2563eb;
         }
 
         .trending-sidebar {
-            width: 220px;
+            width: 250px;
             flex-shrink: 0;
-            border-left: 1px solid #e5e7eb;
-            padding-left: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
         }
 
         .trending-header {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
             color: #111827;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .trending-item {
             padding: 10px 12px;
-            margin-bottom: 8px;
             background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
+            border-radius: 8px;
+            margin-bottom: 8px;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 13px;
-            color: #374151;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+            font-size: 14px;
         }
 
         .trending-item:hover {
-            background: #f3f4f6;
-            border-color: #d1d5db;
+            background: #e5e7eb;
         }
 
         .trending-count {
-            display: inline-block;
             background: #ef4444;
             color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
             font-size: 11px;
             font-weight: 600;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 6px;
         }
 
         .loading {
@@ -716,30 +472,92 @@
             text-align: center;
             padding: 40px;
             color: #6b7280;
+            font-size: 16px;
+            background: white;
+            border-radius: 8px;
         }
 
-        mark {
-            background: #fef08a;
-            padding: 0 2px;
-            border-radius: 2px;
+        .article-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 600px;
+            height: 100vh;
+            background: white;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.3s ease-out;
         }
 
-        .results-list .article-card h3:hover {
-            color: #3b82f6;
-            text-decoration: underline;
-        }
-
-        @media (max-width: 1400px) {
-            .cards-grid {
-                grid-template-columns: repeat(2, 1fr);
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
             }
 
-            .trending-sidebar {
-                width: 180px;
+            to {
+                transform: translateX(0);
             }
         }
 
-        @media (max-width: 1200px) {
+        .article-panel-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .article-panel-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            padding: 8px 16px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .full-article {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .full-article h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+
+        .full-article-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        .full-article-content {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #374151;
+            white-space: pre-wrap;
+        }
+
+        @media (max-width: 768px) {
             .main-layout {
                 flex-direction: column;
             }
@@ -750,38 +568,11 @@
 
             .trending-sidebar {
                 width: 100%;
-                border-left: none;
-                border-top: 1px solid #e5e7eb;
-                padding-left: 0;
-                padding-top: 20px;
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                gap: 12px;
+                position: relative;
             }
 
             .article-panel {
                 width: 100%;
-                border-left: none;
-                border-top: 1px solid #e5e7eb;
-                padding-left: 0;
-                padding-top: 20px;
-            }
-        }
-
-        @media (max-width: 900px) {
-            .cards-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .stats-banner {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .cards-grid {
-                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -791,338 +582,272 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useCallback, useRef } = React;
-
-        const API_URL = 'http://localhost:8000/api';
-
-        function timeAgo(timestamp) {
-            const seconds = Math.floor((Date.now() - timestamp) / 1000);
-            if (seconds < 60) return 'Just now';
-            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-            if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
-            return new Date(timestamp).toLocaleDateString();
-        }
-
-        class RecentArticles {
-            constructor() {
-                this.maxItems = 5;
-            }
-
-            get() {
-                try {
-                    const stored = localStorage.getItem('newsWireRecentArticles');
-                    return stored ? JSON.parse(stored) : [];
-                } catch {
-                    return [];
-                }
-            }
-
-            add(article) {
-                const articles = this.get();
-                const newArticle = {
-                    id: article.id,
-                    title: article.title,
-                    category: article.category,
-                    source: article.source,
-                    timestamp: Date.now()
-                };
-
-                const filtered = articles.filter(a => a.id !== newArticle.id);
-                filtered.unshift(newArticle);
-                const limited = filtered.slice(0, this.maxItems);
-
-                try {
-                    localStorage.setItem('newsWireRecentArticles', JSON.stringify(limited));
-                } catch (e) {
-                    console.error('Failed to save recent article:', e);
-                }
-            }
-
-            clear() {
-                try {
-                    localStorage.removeItem('newsWireRecentArticles');
-                } catch (e) {
-                    console.error('Failed to clear recent articles:', e);
-                }
-            }
-        }
-
-        const recentArticlesManager = new RecentArticles();
+        const { useState, useEffect, useRef } = React;
 
         function App() {
             const [query, setQuery] = useState('');
-            const [categories, setCategories] = useState(['All']);
-            const [sources, setSources] = useState([]);
-            const [selectedSources, setSelectedSources] = useState([]);
+            const [searchMode, setSearchMode] = useState('text');
+            const [results, setResults] = useState([]);
+            const [totalResults, setTotalResults] = useState(0);
+            const [loading, setLoading] = useState(false);
+            const [latency, setLatency] = useState(0);
+            const [redisLatency, setRedisLatency] = useState(null);
+            const [parallelLatency, setParallelLatency] = useState(null);
+
+            const [selectedCategories, setSelectedCategories] = useState(['All']);
+            const [selectedSources, setSelectedSources] = useState(['All']);
             const [sort, setSort] = useState('relevance');
             const [fuzzy, setFuzzy] = useState(false);
             const [offset, setOffset] = useState(0);
+            const limit = 10;
 
-            const [allCategories, setAllCategories] = useState([]);
-            const [categoryCounts, setCategoryCounts] = useState({});
-            const [results, setResults] = useState([]);
-            const [totalResults, setTotalResults] = useState(0);
-            const [latency, setLatency] = useState(0);
-            const [command, setCommand] = useState('');
-            const [spellSuggestion, setSpellSuggestion] = useState(null);
+            const [categories, setCategories] = useState([]);
+            const [sources, setSources] = useState([]);
+            const [trending, setTrending] = useState([]);
 
             const [selectedArticle, setSelectedArticle] = useState(null);
+            const [command, setCommand] = useState('');
             const [showCommand, setShowCommand] = useState(false);
-            const [loading, setLoading] = useState(false);
 
-            const [homepageData, setHomepageData] = useState(null);
-            const [isSearchMode, setIsSearchMode] = useState(false);
-
-            const [autocompleteResults, setAutocompleteResults] = useState(null);
+            const [isSearchMode, setIsSearchMode] = useState(true); // Start in search mode
             const [showAutocomplete, setShowAutocomplete] = useState(false);
+            const [autocompleteResults, setAutocompleteResults] = useState([]);
 
-            const [recentArticles, setRecentArticles] = useState([]);
-            const [showRecentDropdown, setShowRecentDropdown] = useState(false);
+            const [textLatency, setTextLatency] = useState(null);
 
-            const [trending, setTrending] = useState([]);
-            const [trendingLoading, setTrendingLoading] = useState(true);
+            // Prevent infinite loop - track if we should search
+            const shouldAutoSearch = useRef(false);
+            // const autocompleteTimer = useRef(null);
 
-            const searchBoxRef = useRef(null);
-            const recentBtnRef = useRef(null);
-
+            // AUTO-SEARCH: Only when filters change AND we have a query or active filters
             useEffect(() => {
-                setRecentArticles(recentArticlesManager.get());
-            }, []);
-
-            useEffect(() => {
-                fetch(`${API_URL}/categories`)
-                    .then(res => res.json())
-                    .then(data => setAllCategories(data.categories || []));
-
-                fetch(`${API_URL}/sources`)
-                    .then(res => res.json())
-                    .then(data => setSources(data.sources || []));
-
-                // Load trending
-                setTrendingLoading(true);
-                fetch(`${API_URL}/trending`)
-                    .then(res => res.json())
-                    .then(data => {
-                        setTrending(data.trending || []);
-                        setTrendingLoading(false);
-                    })
-                    .catch(() => setTrendingLoading(false));
-            }, []);
-
-            useEffect(() => {
-                if (!isSearchMode) {
-                    fetch(`${API_URL}/homepage`)
-                        .then(res => res.json())
-                        .then(data => setHomepageData(data))
-                        .catch(err => console.error('Homepage error:', err));
-                }
-            }, [isSearchMode]);
-
-            useEffect(() => {
-                if (!query || query.length < 2) {
-                    setShowAutocomplete(false);
-                    return;
-                }
-
-                const timer = setTimeout(() => {
-                    fetch(`${API_URL}/autocomplete?q=${encodeURIComponent(query)}&limit=5`)
-                        .then(res => res.json())
-                        .then(data => {
-                            setAutocompleteResults(data);
-                            setShowAutocomplete(true);
-                        })
-                        .catch(err => console.error('Autocomplete error:', err));
-                }, 150);
-
-                return () => clearTimeout(timer);
-            }, [query]);
-
-            useEffect(() => {
-                function handleClickOutside(event) {
-                    if (searchBoxRef.current && !searchBoxRef.current.contains(event.target)) {
-                        setShowAutocomplete(false);
-                    }
-                    if (recentBtnRef.current && !recentBtnRef.current.contains(event.target)) {
-                        setShowRecentDropdown(false);
+                if (shouldAutoSearch.current) {
+                    // Only auto-search if there's actually something to search
+                    if (query || !selectedCategories.includes('All') || !selectedSources.includes('All')) {
+                        performSearch();
                     }
                 }
-
-                document.addEventListener('mousedown', handleClickOutside);
-                return () => document.removeEventListener('mousedown', handleClickOutside);
+                shouldAutoSearch.current = true;
+            }, [searchMode, selectedCategories, selectedSources, sort, fuzzy]);
+            useEffect(() => {
+                const initializeApp = async () => {
+                    await loadCategories();
+                    await loadSources();
+                    await loadTrending();
+                    // After data loads, show initial articles
+                    setTimeout(() => {
+                        performSearch('', 0);
+                    }, 500);
+                };
+                initializeApp();
             }, []);
 
-            const doSearch = useCallback(async (newOffset = 0, append = false) => {
-                setIsSearchMode(true);
-                setLoading(true);
-
+            const loadCategories = async () => {
                 try {
-                    const sourceParam = selectedSources.length > 0 ? selectedSources.join(',') : 'All';
-
-                    const countsRes = await fetch(
-                        `${API_URL}/category-counts?q=${encodeURIComponent(query)}&source=${encodeURIComponent(sourceParam)}`
-                    );
-                    const countsData = await countsRes.json();
-                    setCategoryCounts(countsData.counts || {});
-
-                    const categoryParam = categories.includes('All') ? 'All' : categories.join(',');
-
-                    const searchRes = await fetch(
-                        `${API_URL}/search?q=${encodeURIComponent(query)}&category=${encodeURIComponent(categoryParam)}&source=${encodeURIComponent(sourceParam)}&sort=${sort}&fuzzy=${fuzzy}&offset=${newOffset}&limit=10`
-                    );
-                    const searchData = await searchRes.json();
-
-                    if (append) {
-                        setResults(prev => [...prev, ...(searchData.results || [])]);
-                    } else {
-                        setResults(searchData.results || []);
-                    }
-
-                    setTotalResults(searchData.total || 0);
-                    setLatency(searchData.latency_ms || 0);
-                    setCommand(searchData.command || '');
-                    setOffset(newOffset);
-
-                    if (query && query.length >= 2 && !fuzzy) {
-                        const spellRes = await fetch(`${API_URL}/spellcheck?q=${encodeURIComponent(query)}`);
-                        const spellData = await spellRes.json();
-                        if (spellData.suggestions && Object.keys(spellData.suggestions).length > 0) {
-                            let corrected = query;
-                            for (const [orig, sugg] of Object.entries(spellData.suggestions)) {
-                                corrected = corrected.replace(orig, sugg);
-                            }
-                            if (corrected !== query) {
-                                setSpellSuggestion(corrected);
-                            } else {
-                                setSpellSuggestion(null);
-                            }
-                        } else {
-                            setSpellSuggestion(null);
-                        }
-                    } else {
-                        setSpellSuggestion(null);
-                    }
-                } catch (error) {
-                    console.error('Search error:', error);
-                }
-
-                setLoading(false);
-            }, [query, categories, selectedSources, sort, fuzzy]);
-
-            useEffect(() => {
-                if (categories.length > 0 && !categories.includes('All')) {
-                    setIsSearchMode(true);
-                    doSearch(0, false);
-                } else if (selectedSources.length > 0) {
-                    setIsSearchMode(true);
-                    doSearch(0, false);
-                } else if (isSearchMode) {
-                    doSearch(0, false);
-                }
-            }, [categories, selectedSources, sort, fuzzy]);
-
-            useEffect(() => {
-                if (!isSearchMode && query.trim()) {
-                    setIsSearchMode(true);
-                }
-
-                if (isSearchMode) {
-                    const timer = setTimeout(() => {
-                        doSearch(0, false);
-                    }, 300);
-                    return () => clearTimeout(timer);
-                }
-            }, [query, isSearchMode]);
-
-            const viewArticle = async (docId) => {
-                try {
-                    const res = await fetch(`${API_URL}/article/${encodeURIComponent(docId)}`);
+                    const res = await fetch('/api/categories');
                     const data = await res.json();
-                    if (data.article) {
-                        setSelectedArticle(data.article);
-
-                        // Add to recent articles
-                        recentArticlesManager.add({
-                            id: docId,
-                            title: data.article.title,
-                            category: data.article.category,
-                            source: data.article.source
-                        });
-                        setRecentArticles(recentArticlesManager.get());
+                    if (data.categories && data.categories.length > 0) {
+                        setCategories(data.categories);
+                    } else {
+                        // Fallback categories if API fails
+                        setCategories([
+                            { name: 'General', count: 0 },
+                            { name: 'Business', count: 0 },
+                            { name: 'World', count: 0 },
+                            { name: 'Entertainment', count: 0 },
+                            { name: 'Politics', count: 0 },
+                            { name: 'Sports', count: 0 },
+                            { name: 'Technology', count: 0 },
+                            { name: 'Health', count: 0 },
+                            { name: 'Lifestyle', count: 0 }
+                        ]);
                     }
-                } catch (error) {
-                    console.error('Error loading article:', error);
+                } catch (err) {
+                    console.error('Failed to load categories:', err);
+                    // Use fallback
+                    setCategories([
+                        { name: 'General', count: 0 },
+                        { name: 'Business', count: 0 }
+                    ]);
                 }
+            };
+
+            const loadSources = async () => {
+                try {
+                    const res = await fetch('/api/sources');
+                    const data = await res.json();
+                    setSources(data.sources || []);
+                } catch (err) {
+                    console.error('Failed to load sources:', err);
+                }
+            };
+
+            const loadTrending = async () => {
+                try {
+                    const res = await fetch('/api/trending');
+                    const data = await res.json();
+                    setTrending(data.trending || []);
+                } catch (err) {
+                    console.error('Failed to load trending:', err);
+                }
+            };
+
+            const toggleSource = (sourceName) => {
+                if (sourceName === 'All') {
+                    setSelectedSources(['All']);
+                } else {
+                    const filtered = selectedSources.filter(s => s !== 'All');
+                    if (filtered.includes(sourceName)) {
+                        const newSources = filtered.filter(s => s !== sourceName);
+                        setSelectedSources(newSources.length === 0 ? ['All'] : newSources);
+                    } else {
+                        setSelectedSources([...filtered, sourceName]);
+                    }
+                }
+            };
+
+            const getSourceParam = () => {
+                if (selectedSources.includes('All') || selectedSources.length === 0) {
+                    return 'All';
+                }
+                // FIXED: Return individual source for single selection, comma-separated for multiple
+                if (selectedSources.length === 1) {
+                    return selectedSources[0];
+                }
+                return selectedSources.join(',');
+            };
+            const getCategoryParam = () => {
+                if (selectedCategories.includes('All') || selectedCategories.length === 0) {
+                    return 'All';
+                }
+                if (selectedCategories.length === 1) {
+                    return selectedCategories[0];
+                }
+                return selectedCategories.join(',');
+            };
+            const performSearch = async (searchQuery = query, searchOffset = 0) => {
+                const sourceParam = getSourceParam();
+                const categoryParam = getCategoryParam();
+
+                // Always show results - sort is also a filter
+                setIsSearchMode(true);
+
+                setLoading(true);
+                setOffset(searchOffset);
+
+                const start = performance.now();
+                try {
+                    let url;
+                    if (searchMode === 'vector') {
+                        url = `/api/search/vector?q=${encodeURIComponent(searchQuery)}&category=${categoryParam}&source=${sourceParam}&offset=${searchOffset}&limit=${limit}`;
+                    } else if (searchMode === 'hybrid') {
+                        url = `/api/search/hybrid?q=${encodeURIComponent(searchQuery)}&category=${categoryParam}&source=${sourceParam}&offset=${searchOffset}&limit=${limit}`;
+                    } else {
+                        url = `/api/search?q=${encodeURIComponent(searchQuery)}&category=${categoryParam}&source=${sourceParam}&sort=${sort}&fuzzy=${fuzzy}&offset=${searchOffset}&limit=${limit}`;
+                    }
+
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    const end = performance.now();
+
+                    setLatency(end - start);
+                    setRedisLatency(data.latency_breakdown?.redis_vector_search_ms || null);
+                    setTextLatency(data.latency_breakdown?.text_search_ms || null);
+                    setParallelLatency(data.latency_breakdown?.parallel_ms || null);
+                    setResults(searchOffset === 0 ? data.results || [] : [...results, ...(data.results || [])]);
+                    setTotalResults(data.total || 0);
+                    setCommand(data.command || '');
+                } catch (err) {
+                    console.error('Search failed:', err);
+                    setResults([]);
+                    setTotalResults(0);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleSearch = (e) => {
+                if (e) e.preventDefault();
+                performSearch();
             };
 
             const loadMore = () => {
-                doSearch(offset + 10, true);
+                performSearch(query, offset + limit);
             };
 
-            const applySuggestion = () => {
-                if (spellSuggestion) {
-                    setQuery(spellSuggestion);
-                }
-            };
-
-            const toggleCategory = (cat) => {
-                if (cat === 'All') {
-                    setCategories(['All']);
-                } else {
-                    const newCategories = categories.filter(c => c !== 'All');
-                    if (newCategories.includes(cat)) {
-                        const filtered = newCategories.filter(c => c !== cat);
-                        setCategories(filtered.length > 0 ? filtered : ['All']);
-                    } else {
-                        setCategories([...newCategories, cat]);
+            const viewArticle = async (articleId) => {
+                try {
+                    const res = await fetch(`/api/article/${articleId}`);
+                    const data = await res.json();
+                    if (data.article) {
+                        setSelectedArticle(data.article);
                     }
+                } catch (err) {
+                    console.error('Failed to load article:', err);
                 }
             };
 
-            const toggleSource = (src) => {
-                if (selectedSources.includes(src)) {
-                    const filtered = selectedSources.filter(s => s !== src);
-                    setSelectedSources(filtered);
+            const [showSimilarModal, setShowSimilarModal] = useState(false);
+            const [similarArticles, setSimilarArticles] = useState([]);
+            const [similarToArticle, setSimilarToArticle] = useState(null);
+            const [loadingSimilar, setLoadingSimilar] = useState(false);
+
+            const findSimilar = async (articleId, articleTitle) => {
+                setLoadingSimilar(true);
+                setSimilarToArticle({ id: articleId, title: articleTitle });
+                setShowSimilarModal(true);
+
+                try {
+                    const res = await fetch(`/api/similar/${articleId}?limit=5`);
+                    const data = await res.json();
+
+                    if (data.similar && data.similar.length > 0) {
+                        setSimilarArticles(data.similar);
+                    } else {
+                        setSimilarArticles([]);
+                    }
+                } catch (err) {
+                    console.error('Find similar error:', err);
+                    setSimilarArticles([]);
+                } finally {
+                    setLoadingSimilar(false);
+                }
+            };
+
+
+            const handleQueryChange = async (e) => {
+                const value = e.target.value;
+                setQuery(value);
+
+                if (value.length >= 2) {
+                    try {
+                        const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(value)}&limit=7`);
+                        const data = await res.json();
+                        if (data.suggestions && data.suggestions.length > 0) {
+                            setAutocompleteResults(data.suggestions);
+                            setShowAutocomplete(true);
+                        } else {
+                            setShowAutocomplete(false);
+                        }
+                    } catch (err) {
+                        console.error('Autocomplete error:', err);
+                        setShowAutocomplete(false);
+                    }
                 } else {
-                    setSelectedSources([...selectedSources, src]);
+                    setShowAutocomplete(false);
                 }
             };
 
-            const viewAllInCategory = (cat) => {
-                setCategories([cat]);
-                setIsSearchMode(true);
-                setQuery('');
-                setTimeout(() => {
-                    doSearch(0, false);
-                }, 100);
+            const selectSuggestion = (suggestion) => {
+                setQuery(suggestion.title);
+                setShowAutocomplete(false);
+                performSearch(suggestion.title, 0);
             };
 
             const searchTrendingTag = (tag) => {
                 setQuery(tag);
-                setIsSearchMode(true);
+                setTimeout(() => performSearch(tag), 100);
             };
-
-            const allCount = Object.values(categoryCounts).reduce((a, b) => a + b, 0);
-
-            const ArticleCard = ({ article, onClick }) => (
-                <div className="article-card" onClick={() => onClick(article.id)}>
-                    <h3 dangerouslySetInnerHTML={{
-                        __html: (article.title || 'No title')
-                    }} />
-                    <div className="article-meta">
-                        <span>📁 {article.category || 'N/A'}</span>
-                        <span>📰 {article.source || 'N/A'}</span>
-                        <span>📅 {article.published_at || 'N/A'}</span>
-                        <span>📝 {parseInt(article.word_count || 0).toLocaleString()} words</span>
-                    </div>
-                    <p
-                        className="article-summary"
-                        dangerouslySetInnerHTML={{
-                            __html: article.summary || 'No summary available.'
-                        }}
-                    />
-                </div>
-            );
 
             return (
                 <div className="container">
@@ -1131,358 +856,522 @@
                         <p>Professional news search powered by Azure Managed Redis (RediSearch)</p>
                     </div>
 
-                    
-
-                    <div className="search-row">
-                        <div className="search-box" ref={searchBoxRef}>
-                            <input
-                                type="text"
-                                placeholder="Search for news, topics or sources..."
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                                onFocus={() => query.length >= 2 && setShowAutocomplete(true)}
-                            />
-
-                            {showAutocomplete && autocompleteResults && (
-                                <div className="autocomplete-dropdown">
-                                    {autocompleteResults.articles && autocompleteResults.articles.length > 0 && (
-                                        <div className="autocomplete-section">
-                                            <div className="autocomplete-section-title">🔍 Matching Articles</div>
-                                            {autocompleteResults.articles.map((article, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className="autocomplete-item"
-                                                    onClick={() => {
-                                                        viewArticle(article.id);
-                                                        setShowAutocomplete(false);
-                                                    }}
-                                                >
-                                                    <div className="autocomplete-item-title">{article.title}</div>
-                                                    <div className="autocomplete-item-meta">
-                                                        {article.category} • {article.source} • {article.date}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    {autocompleteResults.spell_suggestion && (
-                                        <div className="autocomplete-section">
-                                            <div
-                                                className="autocomplete-spell"
-                                                onClick={() => {
-                                                    setQuery(autocompleteResults.spell_suggestion);
-                                                    setShowAutocomplete(false);
-                                                }}
-                                            >
-                                                💡 Did you mean: <strong>{autocompleteResults.spell_suggestion}</strong>?
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    <div className="autocomplete-footer">
-                                        Press ↵ to search • ↑↓ to navigate • Esc to close
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <label className="fuzzy-toggle">
-                            <input
-                                type="checkbox"
-                                checked={fuzzy}
-                                onChange={(e) => setFuzzy(e.target.checked)}
-                            />
-                            🔮 Fuzzy search
-                        </label>
-
-                        <div style={{ position: 'relative' }} ref={recentBtnRef}>
-                            <button
-                                className="recent-btn"
-                                onClick={() => setShowRecentDropdown(!showRecentDropdown)}
-                            >
-                                🕐 Recent {recentArticles.length > 0 && `(${recentArticles.length})`}
-                            </button>
-
-                            {showRecentDropdown && (
-                                <div className="recent-dropdown">
-                                    <div className="recent-dropdown-header">Recently Viewed Articles</div>
-                                    {recentArticles.length === 0 ? (
-                                        <div className="recent-empty">No recently viewed articles</div>
-                                    ) : (
-                                        <>
-                                            {recentArticles.map((article, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className="recent-item"
-                                                    onClick={() => {
-                                                        viewArticle(article.id);
-                                                        setShowRecentDropdown(false);
-                                                    }}
-                                                >
-                                                    <div className="recent-item-query">{article.title}</div>
-                                                    <div className="recent-item-filters">
-                                                        {article.category} • {article.source}
-                                                    </div>
-                                                    <div className="recent-item-time">{timeAgo(article.timestamp)}</div>
-                                                </div>
-                                            ))}
-                                            <div className="recent-clear" onClick={() => {
-                                                recentArticlesManager.clear();
-                                                setRecentArticles([]);
-                                                setShowRecentDropdown(false);
+                    <div className="search-section">
+                        <form onSubmit={handleSearch}>
+                            <div className="search-row">
+                                <div className="search-box" style={{ position: 'relative' }}>
+                                    <input
+                                        type="text"
+                                        placeholder="Search for news, topics or sources..."
+                                        value={query}
+                                        onChange={handleQueryChange}
+                                        onBlur={() => setTimeout(() => setShowAutocomplete(false), 200)}
+                                    />
+                                    {showAutocomplete && autocompleteResults.length > 0 && (
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: '100%',
+                                            left: 0,
+                                            right: 0,
+                                            backgroundColor: 'white',
+                                            border: '1px solid #e5e7eb',
+                                            borderRadius: '8px',
+                                            marginTop: '4px',
+                                            maxHeight: '300px',
+                                            overflowY: 'auto',
+                                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                                            zIndex: 1000
+                                        }}>
+                                            <div style={{
+                                                padding: '8px 12px',
+                                                fontSize: '12px',
+                                                color: '#6b7280',
+                                                borderBottom: '1px solid #e5e7eb',
+                                                fontWeight: 600
                                             }}>
-                                                Clear History
+                                                {searchMode === 'text' && 'Matching articles'}
+                                                {searchMode === 'vector' && 'Suggested topics (will use semantic search)'}
+                                                {searchMode === 'hybrid' && 'Suggested topics (combined search)'}
                                             </div>
-                                        </>
+                                            {autocompleteResults.map((sugg, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    onClick={() => selectSuggestion(sugg)}
+                                                    style={{
+                                                        padding: '12px',
+                                                        cursor: 'pointer',
+                                                        borderBottom: idx < autocompleteResults.length - 1 ? '1px solid #f3f4f6' : 'none',
+                                                        fontSize: '14px',
+                                                        color: '#111827',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px'
+                                                    }}
+                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                                                >
+                                                    <span style={{ fontSize: '16px' }}>
+                                                        {sugg.type === 'topic' ? '🏷️' : '📰'}
+                                                    </span>
+                                                    <span style={{ flex: 1 }}>
+                                                        {sugg.title}
+                                                    </span>
+                                                    {sugg.type === 'article' && (
+                                                        <span style={{ fontSize: '11px', color: '#9ca3af' }}>article</span>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
                                     )}
                                 </div>
-                            )}
+                                <div className="fuzzy-toggle">
+                                    <input
+                                        type="checkbox"
+                                        id="fuzzy"
+                                        checked={fuzzy}
+                                        onChange={(e) => setFuzzy(e.target.checked)}
+                                        disabled={searchMode !== 'text'}
+                                    />
+                                    <label htmlFor="fuzzy">🔍 Fuzzy search</label>
+                                </div>
+
+                            </div>
+                        </form>
+
+                        <div className="search-mode-container">
+                            <span className="search-mode-label">🔍 Search Mode:</span>
+                            <div className="search-mode-options">
+                                <div className="search-mode-option">
+                                    <input
+                                        type="radio"
+                                        id="mode-text"
+                                        name="searchMode"
+                                        value="text"
+                                        checked={searchMode === 'text'}
+                                        onChange={(e) => setSearchMode(e.target.value)}
+                                    />
+                                    <label htmlFor="mode-text">Text (Keyword)</label>
+                                </div>
+                                <div className="search-mode-option">
+                                    <input
+                                        type="radio"
+                                        id="mode-vector"
+                                        name="searchMode"
+                                        value="vector"
+                                        checked={searchMode === 'vector'}
+                                        onChange={(e) => setSearchMode(e.target.value)}
+                                    />
+                                    <label htmlFor="mode-vector">Vector (Semantic)</label>
+                                </div>
+                                <div className="search-mode-option">
+                                    <input
+                                        type="radio"
+                                        id="mode-hybrid"
+                                        name="searchMode"
+                                        value="hybrid"
+                                        checked={searchMode === 'hybrid'}
+                                        onChange={(e) => setSearchMode(e.target.value)}
+                                    />
+                                    <label htmlFor="mode-hybrid">Hybrid (Recommended)</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
+                    {/* Category Pills */}
                     <div className="category-pills">
-                        <button
-                            className={`category-pill ${categories.includes('All') ? 'active' : ''}`}
-                            onClick={() => toggleCategory('All')}
+                        <div
+                            className={`category-pill ${selectedCategories.includes('All') ? 'active' : ''}`}
+                            onClick={() => setSelectedCategories(['All'])}
                         >
                             All
-                            <span className="count">{allCount.toLocaleString()}</span>
-                        </button>
-                        {allCategories.slice(0, 12).map(cat => (
-                            <button
+                        </div>
+                        {categories.slice(0, 10).map((cat) => (
+                            <div
                                 key={cat.name}
-                                className={`category-pill ${categories.includes(cat.name) ? 'active' : ''}`}
-                                onClick={() => toggleCategory(cat.name)}
+                                className={`category-pill ${selectedCategories.includes(cat.name) ? 'active' : ''}`}
+                                onClick={() => {
+                                    if (cat.name === 'All') {
+                                        setSelectedCategories(['All']);
+                                    } else {
+                                        const filtered = selectedCategories.filter(c => c !== 'All');
+                                        if (filtered.includes(cat.name)) {
+                                            const newCats = filtered.filter(c => c !== cat.name);
+                                            setSelectedCategories(newCats.length === 0 ? ['All'] : newCats);
+                                        } else {
+                                            const newSelected = [...filtered, cat.name];
+                                            // If all categories selected, switch to "All"
+                                            if (newSelected.length === categories.length) {
+                                                setSelectedCategories(['All']);
+                                            } else {
+                                                setSelectedCategories(newSelected);
+                                            }
+                                        }
+                                    }
+                                }}
                             >
                                 {cat.name}
-                                <span className="count">
-                                    {isSearchMode ? (categoryCounts[cat.name] || 0).toLocaleString() : cat.count.toLocaleString()}
-                                </span>
-                            </button>
+                            </div>
                         ))}
                     </div>
 
                     <div className="main-layout">
+                        {/* Left Sidebar */}
                         <div className="sidebar">
+                            {/* Source Filters */}
                             <div className="filter-section">
                                 <h3>📰 Source</h3>
-                                <label className="filter-option">
+                                <div className="filter-option">
                                     <input
                                         type="checkbox"
-                                        checked={selectedSources.length === 0}
-                                        onChange={() => setSelectedSources([])}
+                                        checked={selectedSources.includes('All')}
+                                        onChange={() => toggleSource('All')}
                                     />
-                                    All
-                                </label>
-                                {sources.slice(0, 10).map(s => (
-                                    <label key={s.name} className="filter-option">
+                                    <span>All</span>
+                                </div>
+                                {sources.slice(0, 10).map((src) => (
+                                    <div key={src.name} className="filter-option">
                                         <input
                                             type="checkbox"
-                                            checked={selectedSources.includes(s.name)}
-                                            onChange={() => toggleSource(s.name)}
+                                            checked={selectedSources.includes(src.name)}
+                                            onChange={() => toggleSource(src.name)}
                                         />
-                                        {s.name}
-                                    </label>
+                                        <span>{src.name}</span>
+                                    </div>
                                 ))}
                             </div>
 
-                            <div className="filter-section">
-                                <h3>📊 Sort By</h3>
-                                <label className="filter-option">
+                            {/* Sort By - Only for Text mode */}
+                            <div className={`filter-section ${searchMode !== 'text' ? 'disabled' : ''}`}>
+                                <h3>📊 Sort By {searchMode !== 'text' && '(Text mode only)'}</h3>
+                                <div className="filter-option">
                                     <input
                                         type="radio"
                                         name="sort"
                                         checked={sort === 'relevance'}
                                         onChange={() => setSort('relevance')}
+                                        disabled={searchMode !== 'text'}
                                     />
-                                    Relevance
-                                </label>
-                                <label className="filter-option">
+                                    <span>Relevance</span>
+                                </div>
+                                <div className="filter-option">
                                     <input
                                         type="radio"
                                         name="sort"
                                         checked={sort === 'date_desc'}
                                         onChange={() => setSort('date_desc')}
+                                        disabled={searchMode !== 'text'}
                                     />
-                                    Newest First
-                                </label>
-                                <label className="filter-option">
+                                    <span>Newest First</span>
+                                </div>
+                                <div className="filter-option">
                                     <input
                                         type="radio"
                                         name="sort"
                                         checked={sort === 'date_asc'}
                                         onChange={() => setSort('date_asc')}
+                                        disabled={searchMode !== 'text'}
                                     />
-                                    Oldest First
-                                </label>
+                                    <span>Oldest First</span>
+                                </div>
                             </div>
                         </div>
 
-                        {!isSearchMode && homepageData ? (
-                            <div className="results-container">
-                                <div className="homepage-section">
-                                    <div className="section-header">
-                                        <div className="section-title">🔥 Top Stories</div>
-                                    </div>
-                                    <div className="cards-grid">
-                                        {homepageData.top_stories && homepageData.top_stories.map((article, idx) => (
-                                            <ArticleCard key={idx} article={article} onClick={viewArticle} />
-                                        ))}
-                                    </div>
-                                </div>
+                        {/* Main Results */}
+                        <div className="results-container">
+                            {isSearchMode && (
+                                <>
+                                    <div className="performance-metrics">
+                                        <div className="metric-item">
+                                            <span className="metric-label">⚡ Search completed in</span>
+                                            <span className="metric-value">
+                                                {parallelLatency !== null 
+                                                    ? `${parallelLatency.toFixed(2)}ms`
+                                                    : redisLatency !== null 
+                                                        ? `${redisLatency.toFixed(2)}ms`
+                                                        : textLatency !== null
+                                                            ? `${textLatency.toFixed(2)}ms`
+                                                            : `${latency.toFixed(2)}ms`
+                                                }
+                                            </span>
+                                        </div>
 
-                                {homepageData.category_sections && homepageData.category_sections.map((section, idx) => (
-                                    <div key={idx} className="homepage-section">
-                                        <div className="section-header">
-                                            <div className="section-title">
-                                                {section.category === 'Politics' && '🏛️'}
-                                                {section.category === 'Business' && '💼'}
-                                                {section.category === 'Technology' && '💻'}
-                                                {section.category === 'Sports' && '⚽'}
-                                                {section.category === 'Science' && '🔬'}
-                                                {section.category}
-                                            </div>
-                                            <a
-                                                className="view-all-btn"
-                                                onClick={() => viewAllInCategory(section.category)}
+                                        
+                                        <div className="metric-item">
+                                            <span className="metric-label">📊 Total Results</span>
+                                            <span className="metric-value">{totalResults.toLocaleString()}</span>
+                                        </div>
+                                        <div className="metric-item">
+                                            <span className="metric-label">📄 On Page</span>
+                                            <span className="metric-value">{results.length}</span>
+                                        </div>
+                                    </div>
+
+                                    {command && (
+                                        <div className="command-accordion">
+                                            <div
+                                                className="command-header"
+                                                onClick={() => setShowCommand(!showCommand)}
                                             >
-                                                View All →
-                                            </a>
+                                                <span>📝 Redis Command</span>
+                                                <span>{showCommand ? '▼' : '▶'}</span>
+                                            </div>
+                                            {showCommand && (
+                                                <div className="command-content">{command}</div>
+                                            )}
                                         </div>
-                                        <div className="cards-grid">
-                                            {section.articles && section.articles.map((article, aIdx) => (
-                                                <ArticleCard key={aIdx} article={article} onClick={viewArticle} />
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="results-container">
-                                <div className="performance-metrics">
-                                    <div className="metric-item">
-                                        <span className="metric-label">⚡ Query Speed</span>
-                                        <span className="metric-value">{latency.toFixed(2)}ms</span>
-                                    </div>
-                                    <div className="metric-item">
-                                        <span className="metric-label">📊 Total Results</span>
-                                        <span className="metric-value">{totalResults.toLocaleString()}</span>
-                                    </div>
-                                    <div className="metric-item">
-                                        <span className="metric-label">📄 On Page</span>
-                                        <span className="metric-value">{results.length.toLocaleString()}</span>
-                                    </div>
+                                    )}
+                                </>
+                            )}
+
+                            {loading && <div className="loading">Loading...</div>}
+
+                            {!loading && isSearchMode && results.length === 0 && (
+                                <div className="no-results">No results found. Try different search terms or filters.</div>
+                            )}
+
+                            {!loading && !isSearchMode && (
+                                <div className="no-results">
+                                    Enter a search query or select filters to see results.
                                 </div>
+                            )}
 
-                                {spellSuggestion && (
-                                    <div className="spell-check">
-                                        💡 Did you mean: <span onClick={applySuggestion}>{spellSuggestion}</span>?
-                                    </div>
-                                )}
+                            {results.map((article, index) => (
+                                <div key={article.id || index} className="article-card">
+                                    {/* Similarity score - only show if exists */}
+                                    {(searchMode === 'vector' || searchMode === 'hybrid') && article.similarity_score !== undefined && (
+                                        <div className="similarity-score">
+                                            🎯 {Math.round((1 - article.similarity_score) * 100)}% match
+                                        </div>
+                                    )}
 
-                                <div className="command-accordion">
-                                    <div
-                                        className="command-header"
-                                        onClick={() => setShowCommand(!showCommand)}
-                                    >
-                                        <span>📝 Redis Command</span>
-                                        <span>{showCommand ? '▼' : '▶'}</span>
+                                    <h3
+                                        onClick={() => viewArticle(article.id)}
+                                        dangerouslySetInnerHTML={{
+                                            __html: article.title || 'No title'
+                                        }}
+                                    />
+
+                                    <div className="article-meta">
+                                        <span>📁 {article.category || 'General'}</span>
+                                        <span>✍️ {article.author || 'Unknown'}</span>
+                                        <span>📅 {article.published_at || 'N/A'}</span>
+                                        <span>📰 {article.source || 'N/A'}</span>
+                                        <span>📝 {parseInt(article.word_count || 0).toLocaleString()} words</span>
                                     </div>
-                                    {showCommand && (
-                                        <div className="command-content">{command}</div>
+
+                                    <p
+                                        className="article-summary"
+                                        dangerouslySetInnerHTML={{
+                                            __html: article.summary || article.content?.substring(0, 200) + '...' || 'No summary available.'
+                                        }}
+                                    />
+
+                                    {(searchMode === 'vector' || searchMode === 'hybrid') && (
+                                        <button
+                                            className="find-similar-btn"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                findSimilar(article.id, article.title);
+                                            }}
+                                            title="Find articles with similar content using AI"
+                                        >
+                                            🔍 Find Similar Articles
+                                        </button>
                                     )}
                                 </div>
+                            ))}
 
-                                {loading && <div className="loading">Loading...</div>}
-
-                                {!loading && results.length === 0 && (
-                                    <div className="no-results">No results found.</div>
-                                )}
-
-                                <div className="results-list">
-                                    {results.map((article, index) => (
-                                        <div key={article.id || index} className="article-card">
-                                            <h3
-                                                onClick={() => viewArticle(article.id)}
-                                                style={{ cursor: 'pointer' }}
-                                                dangerouslySetInnerHTML={{
-                                                    __html: (article.title || 'No title')
-                                                }}
-                                            />
-                                            <div className="article-meta">
-                                                <span>📁 {article.category || 'N/A'}</span>
-                                                <span>✍️ {article.author || 'Unknown'}</span>
-                                                <span>📅 {article.published_at || 'N/A'}</span>
-                                                <span>📰 {article.source || 'N/A'}</span>
-                                                <span>📝 {parseInt(article.word_count || 0).toLocaleString()} words</span>
-                                            </div>
-                                            <p
-                                                className="article-summary"
-                                                dangerouslySetInnerHTML={{
-                                                    __html: article.summary || 'No summary available.'
-                                                }}
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {results.length < totalResults && (
-                                    <button className="load-more-btn" onClick={loadMore}>
-                                        Load More Results
-                                    </button>
-                                )}
-                            </div>
-                        )}
-
-                        <div className="trending-sidebar">
-                            <div className="trending-header">🔥 Trending Topics</div>
-                            {trendingLoading ? (
-                                <div style={{ fontSize: '12px', color: '#9ca3af', padding: '10px' }}>Loading...</div>
-                            ) : trending.length === 0 ? (
-                                <div style={{ fontSize: '12px', color: '#9ca3af', padding: '10px' }}>No trending topics</div>
-                            ) : (
-                                trending.map((item, idx) => (
-                                    <div
-                                        key={idx}
-                                        className="trending-item"
-                                        onClick={() => searchTrendingTag(item.tag)}
-                                    >
-                                        {item.tag}
-                                        <span className="trending-count">{item.count}</span>
-                                    </div>
-                                ))
+                            {/* FIXED: Show Load More button when there are more results */}
+                            {!loading && results.length > 0 && results.length < totalResults && (
+                                <button className="load-more-btn" onClick={loadMore}>
+                                    Load More Results ({totalResults - results.length} remaining)
+                                </button>
                             )}
                         </div>
-
-                        {selectedArticle && (
-                            <div className="article-panel">
-                                <div className="article-panel-header">
-                                    <h3>📄 Full Article</h3>
+                    </div>
+                    {/* Similar Articles Modal */}
+                    {showSimilarModal && (
+                        <div
+                            style={{
+                                position: 'fixed',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                backgroundColor: 'rgba(0,0,0,0.5)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                zIndex: 2000
+                            }}
+                            onClick={() => setShowSimilarModal(false)}
+                        >
+                            <div
+                                style={{
+                                    backgroundColor: 'white',
+                                    borderRadius: '12px',
+                                    width: '600px',
+                                    maxHeight: '80vh',
+                                    overflow: 'auto',
+                                    boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)'
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div style={{
+                                    padding: '20px',
+                                    borderBottom: '1px solid #e5e7eb',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'start'
+                                }}>
+                                    <div>
+                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>
+                                            Similar Articles
+                                        </h3>
+                                        {similarToArticle && (
+                                            <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: '#6b7280' }}>
+                                                Similar to: <strong>{similarToArticle.title}</strong>
+                                            </p>
+                                        )}
+                                    </div>
                                     <button
-                                        className="close-btn"
-                                        onClick={() => setSelectedArticle(null)}
+                                        onClick={() => setShowSimilarModal(false)}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            fontSize: '24px',
+                                            cursor: 'pointer',
+                                            color: '#6b7280',
+                                            padding: '0',
+                                            lineHeight: 1
+                                        }}
                                     >
-                                        ✕ Close
+                                        ×
                                     </button>
                                 </div>
-                                <div className="full-article">
-                                    <h2>{selectedArticle.title}</h2>
-                                    <div className="full-article-meta">
-                                        <span><strong>Category:</strong> {selectedArticle.category}</span>
-                                        <span><strong>Source:</strong> {selectedArticle.source}</span>
-                                        <span><strong>Author:</strong> {selectedArticle.author}</span>
-                                        <span><strong>Published:</strong> {selectedArticle.published_at}</span>
-                                        <span><strong>Words:</strong> {selectedArticle.word_count}</span>
-                                    </div>
-                                    <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', margin: '20px 0' }} />
-                                    <div className="full-article-content">
-                                        {selectedArticle.content}
-                                    </div>
+
+                                <div style={{ padding: '20px' }}>
+                                    {loadingSimilar && (
+                                        <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+                                            Loading similar articles...
+                                        </div>
+                                    )}
+
+                                    {!loadingSimilar && similarArticles.length === 0 && (
+                                        <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+                                            No similar articles found
+                                        </div>
+                                    )}
+
+                                    {!loadingSimilar && similarArticles.length > 0 && (
+                                        <div>
+                                            {similarArticles.map((article, idx) => {
+                                                const isSameCategory = similarToArticle && article.category === similarToArticle.title.split(' ')[0];
+                                                return (
+                                                    <div
+                                                        key={article.id}
+                                                        style={{
+                                                            padding: '16px',
+                                                            marginBottom: '12px',
+                                                            border: '1px solid #e5e7eb',
+                                                            borderRadius: '8px',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                        onClick={() => {
+                                                            viewArticle(article.id);
+                                                            setShowSimilarModal(false);
+                                                        }}
+                                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                                                    >
+                                                        {article.similarity_score && (
+                                                            <div style={{
+                                                                display: 'inline-block',
+                                                                padding: '4px 8px',
+                                                                backgroundColor: '#dbeafe',
+                                                                color: '#1e40af',
+                                                                borderRadius: '4px',
+                                                                fontSize: '12px',
+                                                                fontWeight: 600,
+                                                                marginBottom: '8px'
+                                                            }}>
+                                                                🎯 {Math.round((1 - parseFloat(article.similarity_score)) * 100)}% similar
+                                                            </div>
+                                                        )}
+
+                                                        <h4 style={{
+                                                            margin: '0 0 8px 0',
+                                                            fontSize: '16px',
+                                                            fontWeight: 600,
+                                                            color: '#111827'
+                                                        }}>
+                                                            {article.title}
+                                                        </h4>
+
+                                                        <div style={{
+                                                            display: 'flex',
+                                                            gap: '12px',
+                                                            fontSize: '13px',
+                                                            color: '#6b7280',
+                                                            marginBottom: '8px'
+                                                        }}>
+                                                            <span>📁 {article.category}</span>
+                                                            <span>📰 {article.source}</span>
+                                                            {article.published_at && (
+                                                                <span>📅 {new Date(article.published_at).toLocaleDateString()}</span>
+                                                            )}
+                                                        </div>
+
+                                                        {article.category && (
+                                                            <div style={{
+                                                                fontSize: '12px',
+                                                                color: '#059669',
+                                                                marginTop: '8px',
+                                                                padding: '8px',
+                                                                backgroundColor: '#ecfdf5',
+                                                                borderRadius: '4px'
+                                                            }}>
+                                                                💡 Similar because: Both articles are about {article.category}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
+                    {/* Article Detail Panel */}
+                    {selectedArticle && (
+                        <div className="article-panel">
+                            <div className="article-panel-header">
+                                <h3>📄 Full Article</h3>
+                                <button
+                                    className="close-btn"
+                                    onClick={() => setSelectedArticle(null)}
+                                >
+                                    ✕ Close
+                                </button>
+                            </div>
+                            <div className="full-article">
+                                <h2>{selectedArticle.title}</h2>
+                                <div className="full-article-meta">
+                                    <span><strong>Category:</strong> {selectedArticle.category}</span>
+                                    <span><strong>Source:</strong> {selectedArticle.source}</span>
+                                    <span><strong>Author:</strong> {selectedArticle.author}</span>
+                                    <span><strong>Published:</strong> {selectedArticle.published_at}</span>
+                                    <span><strong>Words:</strong> {selectedArticle.word_count}</span>
+                                </div>
+                                <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', margin: '20px 0' }} />
+                                <div className="full-article-content">
+                                    {selectedArticle.content}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         }
