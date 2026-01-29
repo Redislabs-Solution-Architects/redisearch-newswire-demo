@@ -1,7 +1,7 @@
 # RediSearch NewsWire Demo
 <img width="637" height="255" alt="image" src="https://github.com/user-attachments/assets/79f3cdf8-2a02-449e-bb58-cc530e3c3aab" />
 
-<img width="560" height="193" alt="image" src="https://github.com/user-attachments/assets/5595a42c-23f6-4762-a2fa-8cd6435c40ce" />
+<img width="637" height="255" alt="image" src="https://github.com/user-attachments/assets/5595a42c-23f6-4762-a2fa-8cd6435c40ce" />
 
 **⚠️ Important:**
 This demo uses relative API paths (/api) in the frontend so the UI and backend can be deployed together on the same host (VM, container, etc.).
