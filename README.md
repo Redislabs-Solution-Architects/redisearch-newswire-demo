@@ -1,3 +1,5 @@
+**Note:** README update in progress.
+
 # RediSearch NewsWire Demo
 <img width="637" height="255" alt="image" src="https://github.com/user-attachments/assets/79f3cdf8-2a02-449e-bb58-cc530e3c3aab" />
 
